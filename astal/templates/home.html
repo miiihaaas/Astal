@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Rezervacija</h1>
+<form action="" method="POST">
+    <div class="form-group mb-4">
+        <label for="reservation_date">Izaberite datum rezervacije</label>
+        <input class="form-control" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ reservation_date }}">
+        <label for="number_of_people">Broj osoba</label>
+        <input class="form-control" name="number_of_people" id="number_of_people" type="number" min="1" value="{{ number_of_people }}">
+        <label for="reservation_time">Izaberite vreme rezervacije</label>
+        <select class="form-select" name="reservation_time" id="reservation_time">
+            {% for interval in interval_options %}
+                <option value="{{ interval[0] }}">{{ interval[0] }} - {{ interval[1] }} </option>
+            {% endfor %}
+        </select>
+
+        <label for="user_email" id="user_email">Mejl</label>
+        <input class="form-control" name="user_email" id="user_email" type="email" value="{{ user_email }}">
+
+        <label for="user_name">Ime</label>
+        <input class="form-control" name="user_name" id="user_name" type="text" value="{{ user_name }}">
+
+        <label for="user_surname">Prezime</label>
+        <input class="form-control" name="user_surname" id="user_surname" type="text" value="{{ user_surname }}">
+
+        <label for="user_phone">Broj telefona</label>
+        <input class="form-control" name="user_phone" id="user_phone" type="text" value="{{ user_phone }}">
+
+        <input type="hidden" id="submit_type" name="submit_type" value="">
+    </div>
+    <button class="btn btn-primary" type="submit" id="reservation_button" name="reservation_button" onclick="document.getElementById('submit_type').value='button'">Rezerviši</button>
+</form>
+{% endblock content %}
+{% block scripts %}
+<script>
+    document.addEventListener('change', function (e) {
+        if (e.target.id === 'reservation_date' || e.target.id === 'number_of_people') {  // Ispravljeno ime polja
+            document.getElementById('submit_type').value = 'input_change';
+            var form = document.querySelector('form');
+            var formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.open();
+                document.write(data);
+                document.close();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+</script>
+{% endblock scripts %}

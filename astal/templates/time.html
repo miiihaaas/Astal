@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Rezervacija</h1>
+<form action="" method="POST">
+    <label for="reservation_date">Izaberite datum rezervacije</label>
+    <input class="form-control" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}">
+    <label for="nuber_of_people">Broj osoba</label>
+    <input class="form-control" name="nuber_of_people" id="nuber_of_people" type="number" min="1">
+    <label for="amount">Iznos za uplatu rezervacije</label>
+    <input type="number" class="form-control" name="amount" id="amount" readonly>
+    <label for="time">Izaberite vreme rezervacije</label>
+    <select class="form-select" name="time" id="time">
+        {% for interval in interval_options %}
+            <option value="{{ interval[0] }}">{{ interval[0] }} - interval[1] </option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-primary" type="submit">Rezerviši</button>
+</form>
+{% endblock content %}

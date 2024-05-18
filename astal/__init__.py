@@ -1,0 +1,49 @@
+import os
+from dotenv import load_dotenv
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
+from flask_mail import Mail
+
+
+
+load_dotenv()
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+#kod ispod treba da reši problem Internal Server Error - komunikacija sa serverom
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
+}
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['FLASK_APP'] = 'run.py'
+
+db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+
+# login_manager = LoginManager(app)
+# login_manager.login_view = 'login'
+# login_manager.login_message_category = 'info'
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER') #dodati u .env: 'mail.putninalozi.online'
+app.config['MAIL_PORT'] = os.getenv('MAIL_PORT') #dodati u .env: 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer
+app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer -- za 2 step verification: https://support.google.com/accounts/answer/185833
+mail = Mail(app)
+
+
+from astal.main.routes import main
+
+app.register_blueprint(main)
+
+
+# Ovde importujemo modele kako bi se inicirala baza podataka
+from astal.models import User, Reservation, Calendar
+
+# Inicijalizacija baze podataka
+with app.app_context():
+    db.create_all()
