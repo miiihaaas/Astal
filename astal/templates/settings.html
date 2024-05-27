@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Podešavanja</h1>
+<form action="" method="POST">
+    <div class="form-group mb-4">
+        <label for="reservation_coast_per_person">Cena po osobi</label>
+        <input class="form-control" name="reservation_coast_per_person" id="reservation_coast_per_person" type="number" step="0.01" value="{{ settings.reservation_coast_per_person }}">
+    </div>
+    <div class="form-group mb-4">
+        <label for="default_number_of_tables">Podrazumevani Broj stolova</label>
+        <input class="form-control" name="default_number_of_tables" id="default_number_of_tables" type="number" value="{{ settings.default_number_of_tables }}">
+    </div>
+    <div class="form-group mb-4">
+        <label for="reservation_start_time">Vreme početka rezervacije</label>
+        <input class="form-control" name="reservation_start_time" id="reservation_start_time" type="time" value="{{ settings.reservation_start_time }}">
+    </div>
+    <div class="form-group mb-4">
+        <label for="reservation_end_time">Vreme završetka rezervacije</label>
+        <input class="form-control" name="reservation_end_time" id="reservation_end_time" type="time" value="{{ settings.reservation_end_time }}">
+    </div>
+    <input type="hidden" id="submit_type" name="submit_type" value="">
+    <button class="btn btn-primary" type="submit" id="settings_button" name="settings_button" onclick="document.getElementById('submit_type').value='button'">Sacuvaj</button>
+</form>
+{% endblock content %}

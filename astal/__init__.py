@@ -37,8 +37,10 @@ mail = Mail(app)
 
 
 from astal.main.routes import main
+from astal.admin.routes import admin
 
 app.register_blueprint(main)
+app.register_blueprint(admin)
 
 
 # Ovde importujemo modele kako bi se inicirala baza podataka

@@ -85,11 +85,37 @@ def add_user_to_db(user_inputs):
         user = User.query.filter_by(email=user_inputs[0]).first()
         if user:
             flash('Korisnik sa tim email adresom vec postoji', 'danger')
+            user.name = user_inputs[1].title()
+            user.surname = user_inputs[2].title()
+            user.phone = user_inputs[3]
+            db.session.commit()
             return user
         else:
-            new_user = User(email=user_inputs[0], name=user_inputs[1], surname=user_inputs[2], phone=user_inputs[3])
+            new_user = User(email=user_inputs[0], name=user_inputs[1].title(), surname=user_inputs[2].title(), phone=user_inputs[3])
             db.session.add(new_user)
             db.session.commit()
             return new_user
     else:
         return False
+
+
+def book_tables(start_time, intervals, reservation_id, user_id, reserved_tables, num_intervals):
+    start_time_found = False
+    intervals_booked = 0
+
+    for interval, details in intervals.items():
+        if interval == start_time:
+            start_time_found = True
+        if start_time_found and details["free_tables"] >= reserved_tables:
+            if intervals_booked < num_intervals:
+                details["reservations"].append({
+                    "reservation_id": reservation_id,
+                    "user_id": user_id,
+                    "reserved_tables": reserved_tables
+                })
+                details["booked_tables"] += reserved_tables
+                details["free_tables"] -= reserved_tables
+                intervals_booked += 1
+            else:
+                break
+    return intervals

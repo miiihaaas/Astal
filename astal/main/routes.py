@@ -1,25 +1,40 @@
 
-from datetime import datetime
-from flask import Blueprint, redirect, render_template, flash, request, url_for
+from datetime import datetime, timedelta
+from flask import Blueprint, json, jsonify, redirect, render_template, flash, request, url_for
 from astal import db
-from astal.models import User, Reservation, Calendar
-from astal.main.functions import check_availability, calculate_required_tables, is_valid_user_input, add_user_to_db, define_min_and_max_dates
+from astal.admin.functions import create_working_intervals, define_working_hours
+from astal.models import Settings, User, Reservation, Calendar
+from astal.main.functions import book_tables, check_availability, calculate_required_tables, is_valid_user_input, add_user_to_db, define_min_and_max_dates
 
 
 main = Blueprint('main', __name__)
 
 
+@main.route('/settings', methods=['GET', 'POST'])
+def settings():
+    settings = Settings.query.first()
+    if request.method == 'POST':
+        settings.reservation_coast_per_person = float(request.form.get('reservation_coast_per_person'))
+        settings.default_number_of_tables = int(request.form.get('default_number_of_tables'))
+        settings.reservation_start_time = request.form.get('reservation_start_time')
+        settings.reservation_end_time = request.form.get('reservation_end_time')
+        print(f'{settings.reservation_start_time=}')
+        print(f'{settings.reservation_end_time=}')
+        db.session.commit()
+        flash('Uspesno ste izmenili postavke', 'success')
+        return redirect(url_for('main.settings'))
+    return render_template('settings.html', settings=settings)
+
+
 @main.route('/', methods=['GET', 'POST'])
 def home():
+    settings = Settings.query.first()
     min_date, max_date = define_min_and_max_dates()
     print(f'{min_date=}')
     if request.method == 'POST':
         submit_type = request.form.get('submit_type')
-        print(f'{submit_type=}')
         reservation_date = request.form.get('reservation_date')
         number_of_people = int(request.form.get('number_of_people'))
-        print(f'{reservation_date=}')
-        print(f'{number_of_people=}')
         if not reservation_date:
             flash('Unesite datum rezervacije', 'danger')
             return redirect(url_for('main.home'))
@@ -38,45 +53,95 @@ def home():
             user_name = request.form.get('user_name')
             user_surname = request.form.get('user_surname')
             user_phone = request.form.get('user_phone')
+            note = request.form.get('user_note')
 
             user_inputs = [user_email, user_name, user_surname, user_phone]
             if is_valid_user_input(user_inputs):
                 user = add_user_to_db(user_inputs)
             else:
-                return redirect(url_for('main.home'))
+                return "napravi funkcionalnost da se vrati na istu formu da se zadrže sva uneta polja"
             
             
-            reservation_time = request.form.get('reservation_time')
-            new_reservation = Reservation(reservation_date=datetime.strptime(reservation_date, '%Y-%m-%d').date(), 
+            # Pretpostavljamo da dobijate reservation_time iz request.form
+            reservation_time = request.form.get('reservation_time')  # npr. "14:00"
+
+            # Pretvaramo reservation_time string u datetime objekat
+            reservation_time_obj = datetime.strptime(reservation_time, "%H:%M")
+
+            # Dodajemo 3 sata na reservation_time
+            reservation_end_time_obj = reservation_time_obj + timedelta(hours=3)
+
+            # Pretvaramo reservation_end_time_obj nazad u string
+            reservation_end_time = reservation_end_time_obj.strftime("%H:%M")
+            reservations = Reservation.query.filter_by(reservation_date=datetime.strptime(reservation_date, '%Y-%m-%d').date()).all()
+            reservation_number = f'{reservation_date}-{(len(reservations)+1):03d}'
+            new_reservation = Reservation(reservation_number=reservation_number,
+                                            reservation_date=datetime.strptime(reservation_date, '%Y-%m-%d').date(), 
                                             number_of_people=number_of_people, 
-                                            amount=int(number_of_people)*5, 
+                                            amount=int(number_of_people) * settings.reservation_coast_per_person, 
                                             start_time=reservation_time, 
-                                            end_time="13:00", #! ovo napravi dinamično
+                                            end_time=reservation_end_time,
+                                            note=note,
                                             user_id=user.id)
             db.session.add(new_reservation)
             db.session.commit()
-            return f'pritisnuto je dugme REZERVIŠI'
+            
+            reservations = Calendar.query.filter_by(date=datetime.strptime(reservation_date, '%Y-%m-%d').date()).first()
+            if not reservations:
+                new_reservations = define_working_hours(settings, reservation_date)
+                db.session.add(new_reservations)
+                db.session.commit()
+                reservations = Calendar.query.filter_by(date=datetime.strptime(reservation_date, '%Y-%m-%d').date()).first()
+
+            required_tables = calculate_required_tables(number_of_people)
+            # print(f'* pre izmene: {reservations.intervals=}')
+            print(f'* pre izmene: {type(reservations.intervals)=}')
+            updated_intervals = book_tables(reservation_time, json.loads(reservations.intervals), new_reservation.id, user.id, required_tables, 12)
+            reservations.intervals = json.dumps(updated_intervals)
+            print(f'{reservations.id=}')
+            # print(f'** nakon izmene: {reservations.intervals=}')
+            print(f'** nakon izmene: {type(reservations.intervals)=}')
+            try:
+                db.session.commit()
+                print('Data successfully updated in the database.')
+            except Exception as e:
+                db.session.rollback()
+                print(f'Error during commit: {e}')
+            flash(f'Uspesno ste rezervisali {required_tables} stolova za {number_of_people} osoba. Rezervacija se odnosi na datum {reservation_date} u {reservation_time}', 'success')
+            return render_template('conformation_page.html', reservation_number=reservation_number)
         elif submit_type == 'input_change':
-            reservations = Calendar.query.filter_by(date=datetime.strptime(reservation_date, '%Y-%m-%d').date()).all()
+            reservations = Calendar.query.filter_by(date=datetime.strptime(reservation_date, '%Y-%m-%d').date()).first()
+            if not reservations:
+                new_reservations = define_working_hours(settings, reservation_date)
+                db.session.add(new_reservations)
+                db.session.commit()
+                reservations = Calendar.query.filter_by(date=datetime.strptime(reservation_date, '%Y-%m-%d').date()).first()
     elif request.method == 'GET':
         reservation_date = min_date
         number_of_people = 1
-        reservations = Calendar.query.filter_by(date=min_date).all()
+        reservations = Calendar.query.filter_by(date=min_date).first()
+        if not reservations:
+            new_reservations = define_working_hours(settings, reservation_date.strftime('%Y-%m-%d'))
+            db.session.add(new_reservations)
+            db.session.commit()
+            reservations = Calendar.query.filter_by(date=min_date).first()
     # print(f'{reservations=}')
     required_tables = calculate_required_tables(number_of_people)
-    intervals = reservations[0].intervals
+    intervals = json.loads(reservations.intervals)
     print(f'{intervals=}')
     interval_options = []
     for interval_kay, details in intervals.items():
         # print(f'* {interval_kay=}')
-        aveilable, available_intervals = check_availability(interval_kay, intervals, required_tables, 4)
-        if available_intervals > 2:
-            print(f'{interval_kay=}. dostupno {available_intervals * 15} minuta')
-            interval_options.append([interval_kay, f'dostupno {available_intervals * 15} minuta'])
-        else:
-            print(f'{interval_kay=}. nedostupno')
-            interval_options.append([interval_kay, 'nedostupno'])
-    print(f'{interval_options=}')
+        aveilable, available_intervals = check_availability(interval_kay, intervals, required_tables, 12)
+        if available_intervals == 12:
+            interval_options.append([interval_kay, f''])
+        elif available_intervals > 8:
+            # print(f'{interval_kay=}. dostupno {available_intervals * 15} minuta')
+            interval_options.append([interval_kay, f' - dostupno {available_intervals * 15} minuta'])
+        # else:
+            # print(f'{interval_kay=}. nedostupno')
+            # interval_options.append([interval_kay, 'nedostupno'])
+    # print(f'{interval_options=}')
     
     return render_template('home.html', 
                             min_date=min_date, 
@@ -84,10 +149,3 @@ def home():
                             reservation_date=reservation_date,
                             number_of_people=number_of_people,
                             interval_options=interval_options)
-
-@main.route('/time/<data>', methods=['GET', 'POST'])
-def time(data):
-    print(f'{data=}')
-    # interval_options = data['interval_options']
-    
-    return render_template('time.html')

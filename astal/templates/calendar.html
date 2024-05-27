@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Upravljanje rezervacijama</h1>
+<form action="" method="POST">
+    <div class="row">
+        <div class="form-group col">
+            <label for="reservation_date">Izaberite datum rezervacije</label>
+            <input class="form-control" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ selected_date }}">
+        </div>
+        <div class="form-group col">
+            <a class="btn btn-primary mt-4" href="" id="reservation_link">Rezervacije</a>
+        </div>
+    </div>
+</form>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Interval</th>
+            <th>Broj Raspoloživih stolova</th>
+            <th>Broj rezervisanih stolova</th>
+            <th>Broj slobodnih stolova</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in table %}
+        <tr>
+            <td>{{ row['interval'] }}</td>
+            <td><input type="number" class="available-tables" data-interval="{{ row['interval'] }}" value="{{ row['available_tables'] }}"></td>
+            <td>{{ row['booked_tables'] }}</td>
+            <td>{{ row['free_tables'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    
+{% endblock content %}
+{% block scripts %}
+<script>
+    document.addEventListener('change', function (e) {
+        if (e.target.id === 'reservation_date') {
+            var form = document.querySelector('form');
+            var formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.open();
+                document.write(data);
+                document.close();
+            })
+            .catch(error => console.error('Error:', error));
+        } else if (e.target.classList.contains('available-tables')) {
+            var interval = e.target.dataset.interval;
+            var availableTables = e.target.value;
+            var reservationDate = document.getElementById('reservation_date').value;
+            
+            var formData = new FormData();
+            formData.append('interval', interval);
+            formData.append('available_tables', availableTables);
+            formData.append('reservation_date', reservationDate);
+            
+            fetch('{{ url_for("admin.update_tables") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // console.log('Success:', data); //! ovo je bilo pre nego što je dodat if blok
+                if (data.success) {
+                    var currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('selected_date', reservationDate);
+                    window.location.href = currentUrl.href;
+                } else {
+                    console.error('Update failed:', data);
+                }
+                // console.log('Success:', data); //! ovo je bilo pre nego što je dodat if blok
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+    document.getElementById('reservation_link').addEventListener('click', function(e) {
+        e.preventDefault();
+        var reservationDate = document.getElementById('reservation_date').value;
+        var url = new URL('{{ url_for("admin.reservations") }}', window.location.origin);
+        url.searchParams.set('selected_date', reservationDate);
+        window.location.href = url.href;
+    });
+</script>
+{% endblock scripts %}

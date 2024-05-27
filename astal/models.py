@@ -12,10 +12,10 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    name = db.Column(db.String(20), unique=True, nullable=False)
-    surname = db.Column(db.String(20), unique=True, nullable=False)
+    name = db.Column(db.String(20), unique=False, nullable=False)
+    surname = db.Column(db.String(20), unique=False, nullable=False)
     password = db.Column(db.String(60), nullable=True)
-    phone = db.Column(db.String(20), unique=True, nullable=False)
+    phone = db.Column(db.String(20), unique=False, nullable=False)
     reservations = db.relationship('Reservation', backref='user', lazy=True)
 
     def get_reset_token(self, expires_sec=1800):
@@ -37,16 +37,19 @@ class User(db.Model, UserMixin):
 
 class Reservation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    reservation_number = db.Column(db.String(12), nullable=False) #! 20240519-001
     reservation_date = db.Column(db.Date, nullable=False)
     number_of_people = db.Column(db.Integer, nullable=False)
     amount = db.Column(db.Integer, nullable=False)
     start_time = db.Column(db.String(20), nullable=False)
     end_time = db.Column(db.String(20), nullable=False)
+    note = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+    confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return f"Reservation('{self.reservation_date}', '{self.number_of_people}', '{self.amount}', '{self.time}', '{self.user_id}')"
+        return f"Reservation('{self.reservation_date}', '{self.number_of_people}', '{self.amount}')"
     
 
 class Calendar(db.Model):
@@ -57,6 +60,15 @@ class Calendar(db.Model):
     def __repr__(self):
         return f"Calendar('{self.date}', '{self.intervals}')"
 
+
+class Settings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    reservation_coast_per_person = db.Column(db.Float, nullable=False)
+    default_number_of_tables = db.Column(db.Integer, nullable=False)
+    reservation_start_time = db.Column(db.String(5), nullable=False) #! "00:00"
+    reservation_end_time = db.Column(db.String(5), nullable=False) #! "20:30"
+
+    
 
 with app.app_context():
     print('models: checkopint -> posle ovog koda treba da se inicira db!!')
