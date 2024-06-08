@@ -101,7 +101,9 @@ def finish_reservation(reservation, updated_intervals):
 
 
 def extend_reservation(reservation, updated_intervals):
-    next_interval = calculate_next_interval()
+    # print(f'{reservation.end_time=}')
+    reservation_end_time = datetime.strptime(reservation.end_time, "%H:%M")
+    next_interval = calculate_next_interval(reservation_end_time)
     reservation.end_time = next_interval.strftime("%H:%M")
     db.session.commit()
     for interval, details in updated_intervals.items():
@@ -111,8 +113,16 @@ def extend_reservation(reservation, updated_intervals):
             details['booked_tables_4'] = details['booked_tables_4'] + 1
             details['booked_tables_4'] = details['booked_tables_4'] + 1
 
-def calculate_next_interval():
-    time_now = datetime.now()
+def calculate_next_interval(last_interval_obj=None):
+    '''
+    Funkcija za racunanje sledeceg intervala
+    ako je unet interval, onda se racuna vreme u odnosu na taj interval
+    ako nije unet interval, onda se racuna vreme u odnosu na trenutno vremeß
+    '''
+    if last_interval_obj:
+        time_now = last_interval_obj
+    else:
+        time_now = datetime.now()
     # Računanje sledećeg intervala
     minutes = (time_now.minute // 15 + 1) * 15
     if minutes == 60:
