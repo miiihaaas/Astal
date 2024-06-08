@@ -107,7 +107,9 @@ def extend_reservation(reservation, updated_intervals):
     for interval, details in updated_intervals.items():
         if next_interval.strftime("%H:%M") == interval:
             details['available_tables_2'] = details['available_tables_2'] + 1
-            details['booked_tables_2'] = details['booked_tables_2'] + 1
+            details['available_tables_2'] = details['available_tables_2'] + 1
+            details['booked_tables_4'] = details['booked_tables_4'] + 1
+            details['booked_tables_4'] = details['booked_tables_4'] + 1
 
 def calculate_next_interval():
     time_now = datetime.now()

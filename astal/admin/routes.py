@@ -56,9 +56,9 @@ def edit_reservation():
         print('pritisnuto je extend')
         print(f"{request.form=}")
         extend_reservation(reservation, updated_intervals)
-    elif action == 'shorten':
-        print('pritisnuto je shorten')
-        print(f"{request.form=}")
+    # elif action == 'shorten':
+    #     print('pritisnuto je shorten')
+    #     print(f"{request.form=}")
     else:
         print('Pritisnuto je neko drugo dutme')
     reservations_.intervals = json.dumps(updated_intervals)
