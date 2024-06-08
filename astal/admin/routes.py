@@ -111,6 +111,7 @@ def update_tables():
     interval_to_update = request.form.get('interval')
     available_tables_2 = request.form.get('available_tables_2')
     available_tables_4 = request.form.get('available_tables_4')
+    print(f'{selected_date=}, {interval_to_update=}, {available_tables_2=}, {available_tables_4=}')
     # print(f'{selected_date=}, {interval_to_update=}, {available_tables=}')
     reservations = Calendar.query.filter_by(date=selected_date).first()
     intervals = json.loads(reservations.intervals)
@@ -118,10 +119,10 @@ def update_tables():
     updated_intervals = intervals
     for interval, details in updated_intervals.items():
         if interval == interval_to_update:
-            free_tables_2 = int(available_tables_2) - details['booked_tables']
-            details['available_tables'] = available_tables_2
-            free_tables_4 = int(available_tables_4) - details['booked_tables']
-            details['available_tables'] = available_tables_4
+            free_tables_2 = int(available_tables_2) - details['booked_tables_2']
+            details['available_tables_2'] = available_tables_2
+            free_tables_4 = int(available_tables_4) - details['booked_tables_4']
+            details['available_tables_4'] = available_tables_4
             details['free_tables_2'] = free_tables_2
             details['free_tables_4'] = free_tables_4
     # print(f'{updated_intervals=}')
@@ -131,9 +132,12 @@ def update_tables():
     for interval, details in intervals.items():
         table.append({
             'interval': interval,
-            'available_tables': details['available_tables'],
-            'booked_tables': details['booked_tables'],
-            'free_tables': details['free_tables'],
+            'available_tables_2': details['available_tables_2'],
+            'available_tables_4': details['available_tables_4'],
+            'booked_tables_2': details['booked_tables_2'],
+            'booked_tables_4': details['booked_tables_4'],
+            'free_tables_2': details['free_tables_2'],
+            'free_tables_4': details['free_tables_4'],
         })
     flash(f'Uspesno ste promenili broj stolova za datum {selected_date} i interval {interval_to_update}', 'success')
     # return render_template('calendar.html', 
