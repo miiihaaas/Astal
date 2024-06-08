@@ -16,18 +16,24 @@
     <thead>
         <tr>
             <th>Interval</th>
-            <th>Broj Raspoloživih stolova</th>
-            <th>Broj rezervisanih stolova</th>
-            <th>Broj slobodnih stolova</th>
+            <th>Broj Raspoloživih stolova 2</th>
+            <th>Broj rezervisanih stolova 2</th>
+            <th>Broj slobodnih stolova 2</th>
+            <th>Broj Raspoloživih stolova 4</th>
+            <th>Broj rezervisanih stolova 4</th>
+            <th>Broj slobodnih stolova 4</th>
         </tr>
     </thead>
     <tbody>
         {% for row in table %}
         <tr>
             <td>{{ row['interval'] }}</td>
-            <td><input type="number" class="available-tables" data-interval="{{ row['interval'] }}" value="{{ row['available_tables'] }}"></td>
-            <td>{{ row['booked_tables'] }}</td>
-            <td>{{ row['free_tables'] }}</td>
+            <td><input type="number" class="available-tables" data-interval="{{ row['interval'] }}" value="{{ row['available_tables_2'] }}"></td>
+            <td>{{ row['booked_tables_2'] }}</td>
+            <td>{{ row['free_tables_2'] }}</td>
+            <td><input type="number" class="available-tables" data-interval="{{ row['interval'] }}" value="{{ row['available_tables_4'] }}"></td>
+            <td>{{ row['booked_tables_4'] }}</td>
+            <td>{{ row['free_tables_4'] }}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -53,12 +59,14 @@
             .catch(error => console.error('Error:', error));
         } else if (e.target.classList.contains('available-tables')) {
             var interval = e.target.dataset.interval;
-            var availableTables = e.target.value;
+            var availableTables_2 = e.target.value;
+            var availableTables_4 = e.target.value;
             var reservationDate = document.getElementById('reservation_date').value;
             
             var formData = new FormData();
             formData.append('interval', interval);
-            formData.append('available_tables', availableTables);
+            formData.append('available_tables_2', availableTables_2);
+            formData.append('available_tables_4', availableTables_4);
             formData.append('reservation_date', reservationDate);
             
             fetch('{{ url_for("admin.update_tables") }}', {

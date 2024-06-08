@@ -64,7 +64,8 @@ class Calendar(db.Model):
 class Settings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reservation_coast_per_person = db.Column(db.Float, nullable=False)
-    default_number_of_tables = db.Column(db.Integer, nullable=False)
+    default_number_of_tables_2 = db.Column(db.Integer, nullable=False)
+    default_number_of_tables_4 = db.Column(db.Integer, nullable=False)
     reservation_start_time = db.Column(db.String(5), nullable=False) #! "00:00"
     reservation_end_time = db.Column(db.String(5), nullable=False) #! "20:30"
 

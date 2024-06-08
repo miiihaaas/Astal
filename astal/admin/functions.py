@@ -8,7 +8,8 @@ from astal.models import Calendar
 def create_working_intervals(settings):
     start_hour = int(settings.reservation_start_time.split(":")[0])
     end_hour = int(settings.reservation_end_time.split(":")[0])
-    avalable_tables = settings.default_number_of_tables
+    avalable_tables_2 = settings.default_number_of_tables_2
+    avalable_tables_4 = settings.default_number_of_tables_4
     intervals = {}
     for hour in range(0, 24):
         for minute in [0, 15, 30, 45]:
@@ -20,10 +21,13 @@ def create_working_intervals(settings):
                 intervals[start_time] = {
                     "start_time": start_time,
                     "end_time": end_time,
-                    "available_tables": 0,
+                    "available_tables_2": 0,
+                    "available_tables_4": 0,
                     "reservations": [],
-                    "booked_tables": 0, #! podrazumevana vrednost je nula jer za novi dan niko nije rezervisao još uvek sto
-                    "free_tables": 0 #! podrazumevana vrednost je nula jer nije počelo radno vreme
+                    "booked_tables_2": 0, #! podrazumevana vrednost je nula jer za novi dan niko nije rezervisao još uvek sto
+                    "booked_tables_4": 0, #! podrazumevana vrednost je nula jer za novi dan niko nije rezervisao još uvek sto
+                    "free_tables_2": 0, #! podrazumevana vrednost je nula jer nije počelo radno vreme
+                    "free_tables_4": 0 #! podrazumevana vrednost je nula jer nije počelo radno vreme
                 }
             else:
                 start_time = f"{hour:02d}:{minute:02d}"
@@ -33,10 +37,13 @@ def create_working_intervals(settings):
                 intervals[start_time] = {
                     "start_time": start_time,
                     "end_time": end_time,
-                    "available_tables": avalable_tables,
+                    "available_tables_2": avalable_tables_2,
+                    "available_tables_4": avalable_tables_4,
                     "reservations": [],
-                    "booked_tables": 0, #! podrazumevana vrednost je nula jer za novi dan niko nije rezervisao još uvek sto
-                    "free_tables": avalable_tables 
+                    "booked_tables_2": 0, #! podrazumevana vrednost je nula jer za novi dan niko nije rezervisao još uvek sto
+                    "booked_tables_4": 0, #! podrazumevana vrednost je nula jer za novi dan niko nije rezervisao još uvek sto
+                    "free_tables_2": avalable_tables_2,
+                    "free_tables_4": avalable_tables_4 
                 }
     return intervals
 
@@ -53,8 +60,10 @@ def cancel_reservation(reservation, updated_intervals):
             for reservation_details in details['reservations']:
                 if reservation_details['reservation_id'] == reservation.id:
                     details['reservations'].remove(reservation_details)
-                    details['booked_tables'] -= reservation_details['reserved_tables']
-                    details['free_tables'] += reservation_details['reserved_tables']
+                    details['booked_tables_2'] -= reservation_details['reserved_tables_2']
+                    details['free_tables_2'] += reservation_details['reserved_tables_2']
+                    details['booked_tables_4'] -= reservation_details['reserved_tables_4']
+                    details['free_tables_4'] += reservation_details['reserved_tables_4']
     updated_intervals = updated_intervals
     reservation.confirmed = False
     db.session.commit()
@@ -81,8 +90,10 @@ def finish_reservation(reservation, updated_intervals):
             for reservation_details in details['reservations']:
                 if reservation_details['reservation_id'] == reservation.id:
                     details['reservations'].remove(reservation_details)
-                    details['booked_tables'] -= reservation_details['reserved_tables']
-                    details['free_tables'] += reservation_details['reserved_tables']
+                    details['booked_tables_2'] -= reservation_details['reserved_tables_2']
+                    details['free_tables_2'] += reservation_details['reserved_tables_2']
+                    details['booked_tables_4'] -= reservation_details['reserved_tables_4']
+                    details['free_tables_4'] += reservation_details['reserved_tables_4']
     updated_intervals = updated_intervals
     reservation.end_time = next_interval_str
     db.session.commit()
@@ -95,8 +106,8 @@ def extend_reservation(reservation, updated_intervals):
     db.session.commit()
     for interval, details in updated_intervals.items():
         if next_interval.strftime("%H:%M") == interval:
-            details['available_tables'] = details['available_tables'] + 1
-            details['booked_tables'] = details['booked_tables'] + 1
+            details['available_tables_2'] = details['available_tables_2'] + 1
+            details['booked_tables_2'] = details['booked_tables_2'] + 1
 
 def calculate_next_interval():
     time_now = datetime.now()

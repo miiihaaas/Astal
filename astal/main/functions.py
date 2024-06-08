@@ -26,42 +26,81 @@ def define_min_and_max_dates():
 
 def calculate_required_tables(number_of_people):
     """
-    Calculates the number of tables required for a given number of people.
-
-    The calculation is based on the following rules:
-
-    - 1-4 person requires 1 table
-    - 5-6 people require 2 tables
-    - 7-8 people require 3 tables
-    - 9-10 people require 4 tables
-    - ...
-
-    The function will return the minimum number of tables required to accommodate
-    the given number of people.
-
-    :param number_of_people: The number of people to be seated
-    :return: The minimum number of tables required
+    Svaka vrednost u rečniku table_options je lista tuplova gde prvi element predstavlja broj stolova sa dva mesta, 
+    a drugi element predstavlja broj stolova sa četiri mesta.
+    
+    funkcija vraća listu opcija (u formatu touple)
     """
-    for i in range(1, 16):  # 1 to 15 tables
-        if number_of_people < (i * 2 + 3):  # adjust the condition to fit your requirements
-            return i
-    return 15
 
-def check_availability(start_time, intervals, required_tables, num_intervals):
-    start_time_found = False
-    available_intervals = 0
+    table_options = {
+        1: [(1, 0), (0, 1)],                    #! 1:  ["2", "4"],
+        2: [(1, 0), (0, 1)],                    #! 2:  ["2", "4"],
+        3: [(0, 1), (2, 0)],                    #! 3:  ["4", "2+2"],
+        4: [(0, 1), (2, 0)],                    #! 4:  ["4", "2+2"],
+        5: [(0, 1), (2, 0)],                    #! 5:  ["4", "2+2"],
+        6: [(1, 1), (3, 0)],                    #! 6:  ["4+2", "2+2+2"],
+        7: [(1, 1), (3, 0), (0, 2)],            #! 7:  ["4+2", "2+2+2", "4+4"],
+        8: [(0, 2), (2, 1), (4, 0)],            #! 8:  ["4+4", "4+(2+2)", "(2+2)+(2+2)"],
+        9: [(0, 2), (2, 1), (4, 0)],            #! 9:  ["4+4", "4+(2+2)", "(2+2)+(2+2)"],
+        10: [(1, 2), (3, 1), (5, 0)],           #! 10: ["4+4+2", "4+(2+2)+2", "(2+2)+(2+2)+2"],
+        11: [(1, 2), (0, 3), (3, 1), (5, 0)],   #! 11: ["4+4+2", "4+4+4", "4+(2+2)+2", "(2+2)+(2+2)+2"],
+        12: [(0, 3), (2, 2), (4, 1), (6, 0)]    #! 12: ["4+4+4", "4+4+(2+2)", "4+(2+2)+(2+2)", "(2+2)+(2+2)+(2+2)"]
+    }
+    
+    return table_options.get(number_of_people, [])
 
-    for interval, details in intervals.items():
-        if interval == start_time:
-            start_time_found = True
-        if start_time_found:
-            if details["free_tables"] >= required_tables:
-                available_intervals += 1
-            else:
-                return False, available_intervals
-            if available_intervals == num_intervals:
-                return True, available_intervals
-    return False, available_intervals
+def check_availability(start_time, intervals, table_options, num_intervals):
+    for table_option in table_options:
+        # print(f'* {table_option=}')
+        start_time_found = False
+        available_intervals = 0
+        required_tables_2, required_tables_4 = table_option[0], table_option[1]
+
+        for interval, details in intervals.items():
+            if interval == start_time:
+                start_time_found = True
+            if start_time_found:
+                # print(f'{num_intervals=}; {available_intervals=}')
+                if details["free_tables_2"] >= required_tables_2 and details["free_tables_4"] >= required_tables_4:
+                    available_intervals += 1
+                    if available_intervals == num_intervals:
+                        # print(f'** {interval=}')
+                        # print(f'dostupno {required_tables_2=} i {required_tables_4=} za 3h - iza ovog ne bi trebalo da ima print statmenta')
+                        return (True, available_intervals)
+                else:
+                    # print(f'*** nije dostupno {required_tables_2=} i {required_tables_4=}')
+                    break  # Prekinuti unutrašnju petlju i proveriti sledeću opciju
+
+    return (False, available_intervals)
+
+
+def get_interval_options(intervals, min_date, reservation_date, table_options, check_availability):
+    # print('* get_interval_options()')
+    time_now_obj = datetime.now()
+    interval_options = []
+    
+    for interval_kay, details in intervals.items():
+        interval_kay_obj = datetime.combine(min_date, datetime.strptime(interval_kay, "%H:%M").time())
+        # print(f"{time_now_obj=}, {interval_kay_obj=}")
+        
+        if reservation_date == min_date:
+            # print(f'{reservation_date=}, {min_date=}')
+            if time_now_obj < interval_kay_obj:
+                available, available_intervals = check_availability(interval_kay, intervals, table_options, 12)
+                if available_intervals == 12:
+                    interval_options.append([interval_kay, f''])
+                elif available_intervals > 8:
+                    interval_options.append([interval_kay, f' - dostupno {available_intervals * 15} minuta'])
+        else:
+            available, available_intervals = check_availability(interval_kay, intervals, table_options, 12)
+            if available_intervals == 12:
+                interval_options.append([interval_kay, f''])
+            elif available_intervals > 8:
+                interval_options.append([interval_kay, f' - dostupno {available_intervals * 15} minuta'])
+    
+    return interval_options
+    
+
 
 
 def is_valid_user_input(user_inputs):
@@ -99,23 +138,59 @@ def add_user_to_db(user_inputs):
         return False
 
 
-def book_tables(start_time, intervals, reservation_id, user_id, reserved_tables, num_intervals):
-    start_time_found = False
-    intervals_booked = 0
+def book_tables(start_time, intervals, reservation_id, user_id, table_options, num_intervals):
+    for table_option in table_options:
+        required_tables_2, required_tables_4 = table_option[0], table_option[1]
+        print(f'{required_tables_2=} i {required_tables_4=}')
+        start_time_found = False
+        intervals_booked = 0
+        can_book = True
 
-    for interval, details in intervals.items():
-        if interval == start_time:
-            start_time_found = True
-        if start_time_found and details["free_tables"] >= reserved_tables:
-            if intervals_booked < num_intervals:
-                details["reservations"].append({
-                    "reservation_id": reservation_id,
-                    "user_id": user_id,
-                    "reserved_tables": reserved_tables
-                })
-                details["booked_tables"] += reserved_tables
-                details["free_tables"] -= reserved_tables
+        # Provera da li je moguće rezervisati traženi broj uzastopnih intervala
+        for interval, details in intervals.items():
+            if interval == start_time:
+                start_time_found = True
+            
+            if start_time_found:
+                if details["free_tables_2"] < required_tables_2 or details["free_tables_4"] < required_tables_4:
+                    can_book = False
+                    break
+
                 intervals_booked += 1
-            else:
+                if intervals_booked == num_intervals:
+                    break
+
+        if start_time_found and can_book:
+            intervals_booked = 0
+            start_time_found = False  # Resetovanje za rezervaciju
+            break_outer_loop = False  # Promenljiva za prekid spoljašnjeg loopa
+
+            for interval, details in intervals.items():
+                if interval == start_time:
+                    start_time_found = True
+
+                if start_time_found and intervals_booked < num_intervals:
+                    details["reservations"].append({
+                        "reservation_id": reservation_id,
+                        "user_id": user_id,
+                        "reserved_tables_2": required_tables_2, 
+                        "reserved_tables_4": required_tables_4
+                    })
+                    details["booked_tables_2"] += required_tables_2
+                    details["booked_tables_4"] += required_tables_4
+                    details["free_tables_2"] -= required_tables_2
+                    details["free_tables_4"] -= required_tables_4
+                    intervals_booked += 1
+                    print(f'rezervisan je interval {interval}')
+
+                if intervals_booked == num_intervals:
+                    print('rezervisano je maksimalan broj intervala')
+                    break_outer_loop = True
+                    break
+
+            if break_outer_loop:
                 break
+
     return intervals
+
+
