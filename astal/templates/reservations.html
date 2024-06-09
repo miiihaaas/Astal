@@ -39,9 +39,17 @@
             <td>{{ reservation.user.phone }}</td>
             <td>{{ reservation.note }}</td>
             <td>
-                <button id="reservation-{{ reservation.id }}" type="button" class="btn btn-primary open-modal" data-reservation-id="{{ reservation.id }}">
-                    Otvori
-                </button>
+                {% if reservation.status == 'confirmed' %}
+                    <button id="reservation-{{ reservation.id }}" type="button" class="btn btn-primary open-modal" data-reservation-id="{{ reservation.id }}" data-modal-type="intervali">
+                        Intervali
+                    </button>
+                {% elif reservation.status == 'pending' %}
+                    <button id="reservation-{{ reservation.id }}" type="button" class="btn btn-primary open-modal" data-reservation-id="{{ reservation.id }}" data-modal-type="prisustvo">
+                        Prisustvo
+                    </button>
+                {% else %}
+                    <button>{{ reservation.status }}</button>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -123,6 +131,7 @@
 
         $('.open-modal').on('click', function() {
             var reservationId = $(this).data('reservation-id');
+            var modalType = $(this).data('modal-type'); // new line to get the type of modal
             var reservationRow = $(this).closest('tr');
             var reservationData = {
                 id: reservationId,
@@ -137,7 +146,6 @@
                 phone: reservationRow.find('td:eq(8)').text(),
                 note: reservationRow.find('td:eq(8)').text()
             };
-            console.log(reservationData);
 
             $('#reservation_id').val(reservationData.id);
             $('#reservation-number').text(reservationData.reservation_number);
@@ -148,9 +156,22 @@
             $('#amount').val(reservationData.amount);
             $('#reservation_start').val(reservationData.start_time.split(' ')[0]);
             $('#reservation_end').val(reservationData.end_time.split(' ')[0]);
-            
+
+            // Dynamically update modal buttons based on modal type
+            var modalFooter = $('.modal-footer');
+            modalFooter.empty(); // clear previous buttons
+
+            if (modalType === 'prisustvo') {
+                modalFooter.append('<button type="submit" class="btn btn-danger" id="cancel" name="action" value="cancel">Gosti se nisu pojavili</button>');
+                modalFooter.append('<button type="submit" class="btn btn-primary" id="confirm" name="action" value="confirm">Gosti su se pojavili</button>');
+            } else if (modalType === 'intervali') {
+                modalFooter.append('<button type="submit" class="btn btn-primary" id="finish" name="action" value="finish">Gosti otišli</button>');
+                modalFooter.append('<button type="submit" class="btn btn-primary" id="extend" name="action" value="extend">Produži vreme rezervacije</button>');
+            }
+
             $('#exampleModal').modal('show');
         });
+
     });
 </script>
 <script>

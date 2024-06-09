@@ -1,6 +1,6 @@
 
 from datetime import datetime, timedelta
-from flask import json
+from flask import flash, json
 from astal import db
 from astal.models import Calendar
 
@@ -65,13 +65,13 @@ def cancel_reservation(reservation, updated_intervals):
                     details['booked_tables_4'] -= reservation_details['reserved_tables_4']
                     details['free_tables_4'] += reservation_details['reserved_tables_4']
     updated_intervals = updated_intervals
-    reservation.confirmed = False
+    reservation.status = 'canceled'
     db.session.commit()
     return updated_intervals
 
 
 def confirm_reservation(reservation):
-    reservation.confirmed = True
+    reservation.status = 'confirmed'
     db.session.commit()
 
 
@@ -96,6 +96,7 @@ def finish_reservation(reservation, updated_intervals):
                     details['free_tables_4'] += reservation_details['reserved_tables_4']
     updated_intervals = updated_intervals
     reservation.end_time = next_interval_str
+    reservation.status = 'finished'
     db.session.commit()
     return updated_intervals
 
@@ -104,14 +105,36 @@ def extend_reservation(reservation, updated_intervals):
     # print(f'{reservation.end_time=}')
     reservation_end_time = datetime.strptime(reservation.end_time, "%H:%M")
     next_interval = calculate_next_interval(reservation_end_time)
-    reservation.end_time = next_interval.strftime("%H:%M")
-    db.session.commit()
+    
+    #! u prvom intervalu se traži id rezervacije odakle se dobjaju vrednosti za rezervisane stolove
+    first_interval = updated_intervals[reservation.start_time]
+    for reservation_details in first_interval['reservations']:
+        if reservation_details['reservation_id'] == reservation.id:
+            reserved_tables_2 = reservation_details['reserved_tables_2']
+            reserved_tables_4 = reservation_details['reserved_tables_4']
+            print(f'* {reserved_tables_2=}')
+            print(f'* {reserved_tables_4=}')
+
+    
     for interval, details in updated_intervals.items():
         if next_interval.strftime("%H:%M") == interval:
-            details['available_tables_2'] = details['available_tables_2'] + 1
-            details['available_tables_2'] = details['available_tables_2'] + 1
-            details['booked_tables_4'] = details['booked_tables_4'] + 1
-            details['booked_tables_4'] = details['booked_tables_4'] + 1
+            if reserved_tables_2 < details['free_tables_2'] and reserved_tables_4 < details['free_tables_4']:
+                details['reservations'].append({
+                    "reservation_id": reservation.id,
+                    "user_id": reservation.user_id,
+                    "reserved_tables_2": reserved_tables_2, 
+                    "reserved_tables_4": reserved_tables_4
+                })
+                details['free_tables_2'] -= reserved_tables_2
+                details['free_tables_4'] -= reserved_tables_4
+                details['booked_tables_2'] += reserved_tables_2
+                details['booked_tables_4'] += reserved_tables_4
+                
+                reservation.end_time = next_interval.strftime("%H:%M")
+                db.session.commit()
+                flash(f'za rezervaciju {reservation.reservation_number} je uspešno produženo vreme do {reservation.end_time}', 'success')
+            else:
+                flash(f'Nema dovoljno stolova da bi se produžila rezervacija {reservation.reservation_number}', 'danger')
 
 def calculate_next_interval(last_interval_obj=None):
     '''

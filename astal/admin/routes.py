@@ -41,17 +41,17 @@ def edit_reservation():
         print('pritisnuto je confirm')
         print(f"{request.form=}")
         confirm_reservation(reservation)
-        flash(f'Rezervacija {reservation.reservation_number} ({reservation.user.name} {reservation.user.surname}) je uspešno potvrđena', 'success')
+        flash(f'Rezervacija {reservation.reservation_number} na ime {reservation.user.name} {reservation.user.surname} je uspešno potvrđena', 'success')
     elif action == 'cancel':
         print('pritisnuto je cancel')
         print(f"{request.form=}")
         updated_intervals = cancel_reservation(reservation, updated_intervals)
-        flash(f'Rezervacija {reservation.reservation_number} ({reservation.user.name} {reservation.user.surname}) je uspešno otkazana', 'danger')
+        flash(f'Rezervacija {reservation.reservation_number} na ime {reservation.user.name} {reservation.user.surname} je uspešno otkazana', 'danger')
     elif action == 'finish':
         print('pritisnuto je finish')
         print(f"{request.form=}")
         updated_intervals = finish_reservation(reservation, updated_intervals)
-        flash(f'Rezervacija {reservation.reservation_number} ({reservation.user.name} {reservation.user.surname}) je uspešno zavrsena', 'success')
+        flash(f'Rezervacija {reservation.reservation_number} na ime {reservation.user.name} {reservation.user.surname} je uspešno zavrsena', 'success')
     elif action == 'extend':
         print('pritisnuto je extend')
         print(f"{request.form=}")
