@@ -143,13 +143,13 @@ def calculate_next_interval(last_interval_obj=None):
     ako nije unet interval, onda se racuna vreme u odnosu na trenutno vremeß
     '''
     if last_interval_obj:
-        time_now = last_interval_obj
+        next_interval = last_interval_obj
     else:
         time_now = datetime.now()
-    # Računanje sledećeg intervala
-    minutes = (time_now.minute // 15 + 1) * 15
-    if minutes == 60:
-        next_interval = (time_now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
-    else:
-        next_interval = time_now.replace(minute=0, second=0, microsecond=0) + timedelta(minutes=minutes)
+        # Računanje sledećeg intervala
+        minutes = (time_now.minute // 15 + 1) * 15
+        if minutes == 60:
+            next_interval = (time_now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+        else:
+            next_interval = time_now.replace(minute=0, second=0, microsecond=0) + timedelta(minutes=minutes)
     return next_interval
