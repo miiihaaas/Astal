@@ -5,9 +5,15 @@ from astal import db
 from astal.models import Calendar
 
 
-def create_working_intervals(settings):
-    start_hour = int(settings.reservation_start_time.split(":")[0])
-    end_hour = int(settings.reservation_end_time.split(":")[0])
+def create_working_intervals(settings, reservation_date):
+    reservation_date_obj = datetime.strptime(reservation_date, '%Y-%m-%d').date()
+    reservation_month = reservation_date_obj.month
+    if reservation_month < 10 and reservation_month > 4:
+        start_hour = int(settings.summer_reservation_start_time.split(":")[0])
+        end_hour = int(settings.summer_reservation_end_time.split(":")[0])
+    else:
+        start_hour = int(settings.winter_reservation_start_time.split(":")[0])
+        end_hour = int(settings.winter_reservation_end_time.split(":")[0])
     avalable_tables_2 = settings.default_number_of_tables_2
     avalable_tables_4 = settings.default_number_of_tables_4
     intervals = {}
@@ -49,7 +55,7 @@ def create_working_intervals(settings):
 
 
 def define_working_hours(settings, reservation_date):
-    new_intervals = create_working_intervals(settings)
+    new_intervals = create_working_intervals(settings, reservation_date)
     new_resevations = Calendar(date=datetime.strptime(reservation_date, '%Y-%m-%d').date(), intervals=json.dumps(new_intervals))
     return new_resevations
 

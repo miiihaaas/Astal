@@ -22,7 +22,9 @@
             <th>Mejl</th>
             <th>Telefon</th>
             <th>Napomena</th>
+            {% if show_column %}
             <th></th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -38,6 +40,7 @@
             <td>{{ reservation.user.email }}</td>
             <td>{{ reservation.user.phone }}</td>
             <td>{{ reservation.note }}</td>
+            {% if show_column %}
             <td>
                 {% if reservation.status == 'confirmed' %}
                     <button id="reservation-{{ reservation.id }}" type="button" class="btn btn-primary open-modal" data-reservation-id="{{ reservation.id }}" data-modal-type="intervali">
@@ -51,6 +54,7 @@
                     <button>{{ reservation.status }}</button>
                 {% endif %}
             </td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

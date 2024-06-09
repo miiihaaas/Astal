@@ -66,8 +66,12 @@ class Settings(db.Model):
     reservation_coast_per_person = db.Column(db.Float, nullable=False)
     default_number_of_tables_2 = db.Column(db.Integer, nullable=False)
     default_number_of_tables_4 = db.Column(db.Integer, nullable=False)
-    reservation_start_time = db.Column(db.String(5), nullable=False) #! "00:00"
-    reservation_end_time = db.Column(db.String(5), nullable=False) #! "20:30"
+    summer_season_start_month = db.Column(db.Integer, nullable=False) #! 2024-05-01 ---- napraviti da se godin dinamički menja
+    winter_season_start_month = db.Column(db.Integer, nullable=False) #! 2024-10-01 ---- napraviti da se godin dinamički menja
+    summer_reservation_start_time = db.Column(db.String(5), nullable=False) #! "00:00"
+    summer_reservation_end_time = db.Column(db.String(5), nullable=False) #! "20:30"
+    winter_reservation_start_time = db.Column(db.String(5), nullable=False) #! "00:00"
+    winter_reservation_end_time = db.Column(db.String(5), nullable=False) #! "20:30"
 
     
 

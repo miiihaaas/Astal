@@ -10,10 +10,6 @@ admin = Blueprint('admin', __name__)
 
 @admin.route('/reservations', methods=['GET', 'POST'])
 def reservations():
-    # if request.method == 'GET':
-    #     selected_date = request.form.get('reservation_date')
-    # selected_date = datetime.today().date()
-    # print(f'{selected_date=}')
     if request.method == 'POST':
         print('post')
         selected_date = request.form.get('reservation_date')
@@ -22,10 +18,19 @@ def reservations():
         selected_date = request.args.get('selected_date')
         if not selected_date:
             selected_date = datetime.today().strftime('%Y-%m-%d')
-        else:
-            selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
+        selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date() # Uvek konvertuj u date objekat
+    
+    print(f'{selected_date=}')
+    print(f'{datetime.today().date()=}')
+    
+    if selected_date != datetime.today().date():
+        show_column = False
+    else:
+        show_column = True
+    
     reservations = Reservation.query.filter_by(reservation_date=selected_date).all()
-    return render_template('reservations.html', reservations=reservations, selected_date=selected_date)
+    return render_template('reservations.html', reservations=reservations, selected_date=selected_date, show_column=show_column)
+
 
 
 @admin.route('/edit_reservation', methods=['GET', 'POST'])
