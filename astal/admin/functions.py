@@ -76,7 +76,7 @@ def confirm_reservation(reservation):
 
 
 def finish_reservation(reservation, updated_intervals):
-    next_interval = calculate_next_interval()
+    _, next_interval = calculate_next_interval()
 
     # Formatiranje sledećeg intervala u HH:MM format
     next_interval_str = next_interval.strftime("%H:%M")
@@ -104,7 +104,7 @@ def finish_reservation(reservation, updated_intervals):
 def extend_reservation(reservation, updated_intervals):
     # print(f'{reservation.end_time=}')
     reservation_end_time = datetime.strptime(reservation.end_time, "%H:%M")
-    next_interval = calculate_next_interval(reservation_end_time)
+    next_interval_start, next_interval_end = calculate_next_interval(reservation_end_time)
     
     #! u prvom intervalu se traži id rezervacije odakle se dobjaju vrednosti za rezervisane stolove
     first_interval = updated_intervals[reservation.start_time]
@@ -117,7 +117,7 @@ def extend_reservation(reservation, updated_intervals):
 
     
     for interval, details in updated_intervals.items():
-        if next_interval.strftime("%H:%M") == interval:
+        if next_interval_start.strftime("%H:%M") == interval:
             if reserved_tables_2 < details['free_tables_2'] and reserved_tables_4 < details['free_tables_4']:
                 details['reservations'].append({
                     "reservation_id": reservation.id,
@@ -130,7 +130,7 @@ def extend_reservation(reservation, updated_intervals):
                 details['booked_tables_2'] += reserved_tables_2
                 details['booked_tables_4'] += reserved_tables_4
                 
-                reservation.end_time = next_interval.strftime("%H:%M")
+                reservation.end_time = next_interval_end.strftime("%H:%M")
                 db.session.commit()
                 flash(f'za rezervaciju {reservation.reservation_number} je uspešno produženo vreme do {reservation.end_time}', 'success')
             else:
@@ -143,13 +143,13 @@ def calculate_next_interval(last_interval_obj=None):
     ako nije unet interval, onda se racuna vreme u odnosu na trenutno vremeß
     '''
     if last_interval_obj:
-        next_interval = last_interval_obj
+        next_interval_start = last_interval_obj
     else:
-        time_now = datetime.now()
-        # Računanje sledećeg intervala
-        minutes = (time_now.minute // 15 + 1) * 15
-        if minutes == 60:
-            next_interval = (time_now + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
-        else:
-            next_interval = time_now.replace(minute=0, second=0, microsecond=0) + timedelta(minutes=minutes)
-    return next_interval
+        next_interval_start = (datetime.now() + timedelta(minutes=((15 - datetime.now().minute % 15) % 15 or 15))).replace(second=0, microsecond=0) # trenutno vreme zaouruženo na 15 minuta
+    # Računanje sledećeg intervala
+    minutes = (next_interval_start.minute // 15 + 1) * 15
+    if minutes == 60:
+        next_interval_end = (next_interval_start + timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+    else:
+        next_interval_end = next_interval_start.replace(minute=0, second=0, microsecond=0) + timedelta(minutes=minutes)
+    return next_interval_start, next_interval_end
