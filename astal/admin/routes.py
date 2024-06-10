@@ -1,12 +1,42 @@
 from datetime import datetime
-from astal.admin.functions import cancel_reservation, confirm_reservation, define_working_hours, extend_reservation, finish_reservation
-from astal import db
-from astal.models import Calendar, Reservation, Settings
+
+from flask_login import current_user, login_user, logout_user
 from flask import Blueprint, flash, json, redirect, render_template, request, jsonify, url_for
+from astal.admin.functions import cancel_reservation, confirm_reservation, define_working_hours, extend_reservation, finish_reservation
+from astal import db, bcrypt
+from astal.models import Calendar, Reservation, Settings, User
+from astal.admin.forms import LoginForm
 
 
 admin = Blueprint('admin', __name__)
 
+
+@admin.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    print(f'current user: {current_user}')
+    if current_user.is_authenticated:
+        flash('Vec ste prijavljeni', 'info')
+        return redirect(url_for('admin.reservations'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        print(f'user: {user}')
+        print(f'password form hash: {bcrypt.generate_password_hash(form.password.data).decode("utf-8")}')
+        print(f'password check: {bcrypt.check_password_hash(user.password, form.password.data)}')
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            flash(f'Dobro došli, {user.name}!', 'success')
+            return redirect(next_page) if next_page else redirect(url_for('admin.reservations'))
+        else:
+            flash(f'Email ili lozinka nisu odgovarajući.', 'danger')
+    return render_template('login.html', title='Prijavljivanje', form=form, legend='Prijavljivanje')
+
+
+@admin.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('main.home'))
 
 @admin.route('/reservations', methods=['GET', 'POST'])
 def reservations():
