@@ -1,6 +1,7 @@
 
 from datetime import datetime, timedelta
 from flask import Blueprint, json, jsonify, redirect, render_template, flash, request, url_for
+from flask_login import current_user
 from astal import db
 from astal.admin.functions import create_working_intervals, define_working_hours
 from astal.models import Settings, User, Reservation, Calendar
@@ -13,6 +14,9 @@ main = Blueprint('main', __name__)
 @main.route('/settings', methods=['GET', 'POST'])
 def settings():
     settings = Settings.query.first()
+    if current_user.is_anonymous:
+        flash('Nemate autorizaciju da pristupite ovoj stranici.', 'danger')
+        return redirect(url_for('main.home'))
     if request.method == 'POST':
         settings.reservation_coast_per_person = float(request.form.get('reservation_coast_per_person'))
         settings.default_number_of_tables_2 = int(request.form.get('default_number_of_tables_2'))

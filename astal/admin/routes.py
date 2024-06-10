@@ -40,6 +40,9 @@ def logout():
 
 @admin.route('/reservations', methods=['GET', 'POST'])
 def reservations():
+    if current_user.is_anonymous:
+        flash('Nemate autorizaciju da pristupite ovoj stranici.', 'danger')
+        return redirect(url_for('main.home'))
     if request.method == 'POST':
         print('post')
         selected_date = request.form.get('reservation_date')
@@ -65,6 +68,9 @@ def reservations():
 
 @admin.route('/edit_reservation', methods=['GET', 'POST'])
 def edit_reservation():
+    if current_user.is_anonymous:
+        flash('Nemate autorizaciju da pristupite ovoj stranici.', 'danger')
+        return redirect(url_for('main.home'))
     action = request.form.get('action')
     reservation = Reservation.query.get(request.form.get('reservation_id'))
     reservations_ = Calendar.query.filter_by(date=reservation.reservation_date).first()
@@ -102,6 +108,9 @@ def edit_reservation():
 
 @admin.route('/calendar', methods=['GET', 'POST'])
 def calendar():
+    if current_user.is_anonymous:
+        flash('Nemate autorizaciju da pristupite ovoj stranici.', 'danger')
+        return redirect(url_for('main.home'))
     settings = Settings.query.first()
     # selected_date = datetime.today().date()
     if request.method == 'POST':
@@ -142,6 +151,10 @@ def calendar():
 
 @admin.route('/update_tables', methods=['GET', 'POST'])
 def update_tables():
+    if current_user.is_anonymous:
+        flash('Nemate autorizaciju da pristupite ovoj stranici.', 'danger')
+        return redirect(url_for('main.home'))
+    
     selected_date = request.form.get('reservation_date')
     interval_to_update = request.form.get('interval')
     available_tables_2 = request.form.get('available_tables_2')
