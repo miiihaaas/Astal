@@ -24,9 +24,9 @@ app.config['FLASK_APP'] = 'run.py'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
-# login_manager = LoginManager(app)
-# login_manager.login_view = 'login'
-# login_manager.login_message_category = 'info'
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'info'
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER') #dodati u .env: 'mail.putninalozi.online'
 app.config['MAIL_PORT'] = os.getenv('MAIL_PORT') #dodati u .env: 465
 app.config['MAIL_USE_TLS'] = False

@@ -28,6 +28,7 @@
         {% endif %}
     </head>
     <body>
+        {% if current_user.is_authenticated %}
         <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
                 <ul class="navbar-nav" style="margin-left: auto;">
@@ -43,9 +44,13 @@
                     <li class="nav-item">
                         <a class="navbar-brand" href="{{ url_for('main.home') }}">Astal</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="navbar-brand" href="{{ url_for('admin.logout') }}">Odjavite se</a>
+                    </li>
                 </ul>
             </div>
         </nav>
+        {% endif %}
         
         <main role="main" class="container">
             <div class="row">

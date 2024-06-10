@@ -1,12 +1,12 @@
-from astal import app, db
+from astal import app, db, login_manager
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
-# @login_manager.user_loader
-# def load_user(user_id):
-#     print('ušao sam u funkciju load_user')
-#     return User.query.get(int(user_id))
+@login_manager.user_loader
+def load_user(user_id):
+    print('ušao sam u funkciju load_user')
+    return User.query.get(int(user_id))
 
 
 class User(db.Model, UserMixin):
