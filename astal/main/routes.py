@@ -5,7 +5,7 @@ from flask_login import current_user
 from astal import db
 from astal.admin.functions import create_working_intervals, define_working_hours
 from astal.models import Settings, User, Reservation, Calendar
-from astal.main.functions import book_tables, check_availability, calculate_required_tables, get_interval_options, is_valid_user_input, add_user_to_db, define_min_and_max_dates
+from astal.main.functions import book_tables, check_availability, calculate_required_tables, get_interval_options, is_valid_user_input, add_user_to_db, define_min_and_max_dates, send_email
 
 
 main = Blueprint('main', __name__)
@@ -84,6 +84,7 @@ def home():
                                             end_time=reservation_end_time,
                                             note=note,
                                             user_id=user.id)
+            send_email(user, new_reservation)
             db.session.add(new_reservation)
             db.session.commit()
             
