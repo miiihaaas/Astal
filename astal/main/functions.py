@@ -3,8 +3,9 @@ import calendar
 from datetime import datetime, timedelta
 
 from flask import flash, redirect, url_for
+from flask_mail import Message
 from astal.models import User
-from astal import db
+from astal import db, mail
 
 
 def define_min_and_max_dates():
@@ -194,3 +195,16 @@ def book_tables(start_time, intervals, reservation_id, user_id, table_options, n
     return intervals
 
 
+def send_email(user, new_reservation):
+    subject = f'Potvrda rezervacije - {new_reservation.reservation_number}'
+    recipients = [user.email]
+    cc = [] #! staviti mejl administratora
+    body = f'Rezervacij {new_reservation.reservation_number} je uspesno kreirana na ime {user.name}. Uplaćena vredost od {new_reservation.amount} eura će biti umanjena od vrednosti računa.'
+    message = Message(subject, recipients=recipients, cc=cc)
+    message.html = body
+    
+    try:
+        mail.send(message)
+        flash('Mejl je uspesno poslat', 'success')
+    except Exception as e:
+        flash('Greska prilikom slanja mejla: ' + str(e), 'danger')
