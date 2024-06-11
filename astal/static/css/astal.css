@@ -1,0 +1,9 @@
+﻿body { font-family: 'Montserrat', sans-serif; background-color: #ebebeb; }
+#ball { position: absolute; width: 12px; height: 12px; background-color: #c8d400; border-radius: 50%; pointer-events: none; transition: width 0.3s, height 0.3s; }
+.container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl { max-width: 1500px; }
+.logo { max-width: 180px; }
+.cormorant { font-family: 'Cormorant Garamond', serif; }
+label.cormorant { font-size: 24px; font-style: italic; color: #999; }
+.astal-form input, .astal-form select { background-color: transparent !important; border: 0 !important; border-bottom: 1px solid #999 !important; border-radius: 0 !important; }
+.astal-form input, .astal-form select { margin-bottom: 30px; }
+h1.astal-heading { text-align: center; font-size: clamp(2rem, 5vw, 8rem); margin: 0 0 50px 0; }
