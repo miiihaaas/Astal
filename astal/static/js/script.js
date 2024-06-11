@@ -33,7 +33,7 @@ function animate() {
 animate();
 
 // Dodavanje event listenera za aktivne elemente
-const activeElements = document.querySelectorAll('input, a, button, select');
+const activeElements = document.querySelectorAll('input, a, button, select, textarea');
 
 activeElements.forEach(element => {
     element.addEventListener('mouseover', () => {
