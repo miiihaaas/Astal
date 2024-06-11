@@ -30,11 +30,11 @@
     <body>
         <div id="ball"></div>
         {% if current_user.is_authenticated %}
-        <header>
+        <header class="container logedin">
             <div class="logo">
-                <img src="{{ url_for('static', filename='images/cmk-logo.svg') }}" alt="logo">
+                <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
             </div>
-            <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+            <nav class="navbar sticky-top navbar-expand-lg navbar-light">
                 <div class="container-fluid">
                     <ul class="navbar-nav" style="margin-left: auto;">
                         <li class="nav-item">
@@ -68,6 +68,7 @@
                 <div class="col-md-12">
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
+                    <div class="pre-alert"></div>
                     {% for category, message in messages %}
                         <div class="alert alert-{{ category }}">
                         {{ message|safe }}
