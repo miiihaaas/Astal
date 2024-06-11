@@ -14,12 +14,12 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
         <script src="https://kit.fontawesome.com/eaa4d75133.js" crossorigin="anonymous"></script>
-
+        
         <!-- ovo je za select2 koji ima pretragu u sebi -->
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='mikicustom.css') }}">
-
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/astal.css') }}">
 
         {% if title %}
             <title>Astal - {{ title }}</title>
@@ -28,30 +28,41 @@
         {% endif %}
     </head>
     <body>
+        <div id="ball"></div>
         {% if current_user.is_authenticated %}
-        <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <ul class="navbar-nav" style="margin-left: auto;">
-                    <li class="nav-item">
-                        <a class="navbar-brand" href="{{ url_for('main.settings') }}">Podešavanja</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navbar-brand" href="{{ url_for('admin.reservations') }}">Rezervacije</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navbar-brand" href="{{ url_for('admin.calendar') }}">Kalendar</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navbar-brand" href="{{ url_for('main.home') }}">Astal</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navbar-brand" href="{{ url_for('admin.logout') }}">Odjavite se</a>
-                    </li>
-                </ul>
+        <header>
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/cmk-logo.svg') }}" alt="logo">
             </div>
-        </nav>
+            <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <ul class="navbar-nav" style="margin-left: auto;">
+                        <li class="nav-item">
+                            <a class="navbar-brand" href="{{ url_for('main.settings') }}">Podešavanja</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand" href="{{ url_for('admin.reservations') }}">Rezervacije</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand" href="{{ url_for('admin.calendar') }}">Kalendar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand" href="{{ url_for('main.home') }}">Astal</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand" href="{{ url_for('admin.logout') }}">Odjavite se</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        {% else %}
+        <header class="container">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
+            </div>
+        </header>
         {% endif %}
-        
         <main role="main" class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -68,7 +79,6 @@
                 </div>
             </div>
         </main>
-
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -82,6 +92,7 @@
         <!-- DataTables JS -->
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
         {% block scripts %}{% endblock %}
     </body>
