@@ -1,10 +1,14 @@
 ﻿body { font-family: 'Montserrat', sans-serif; background-color: #ebebeb; }
 body::before { content: " GUŠTAJTE..."; position: absolute; top: 35%; left: 5%; font-size: 16vw; color: rgba(255, 255, 255, 0.3); z-index: -1; white-space: nowrap; }
 #ball { position: absolute; width: 12px; height: 12px; background-color: #c8d400; border-radius: 50%; pointer-events: none; transition: width 0.3s, height 0.3s; }
+body.reservations #ball, body.settings #ball, body.calendar #ball { display: none; }
 .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl { max-width: 1500px; }
+header.container { margin-bottom: 50px; }
 header.container.logedin { display: flex; justify-content: space-between; min-height: 120px; }
 header.container.logedin .logo { display: flex; }
 .logo { max-width: 180px; }
+.navbar-light .navbar-brand:focus, .navbar-light .navbar-brand:hover { color: #0bbbef }
+h1 { text-align: center; }
 .cormorant { font-family: 'Cormorant Garamond', serif; }
 label.cormorant { font-size: 24px; font-style: italic; color: #999; }
 .container.astal-form { padding: 0 10px; }
@@ -22,14 +26,50 @@ h1.astal-heading { text-align: center; font-size: clamp(2rem, 5vw, 8rem); margin
 .alert-success { color: #ffffff; background-color: #c8d400; border-color: #c8d400; }
 .alert-danger { color: #ffffff; background-color: #ff6876; border-color: #ff6876; }
 
+.menu-toggle .toggle-lines { -webkit-box-align: center; -ms-flex-align: center; align-items: center; display: -webkit-box; display: -ms-flexbox; display: flex; 
+    -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-pack: center; -ms-flex-pack: center; 
+    justify-content: center; width: 40px; height: 45px; margin-left: 15px; border: 0; background-color: transparent; }
+.toggle-line { width: 100%; height: 3px; display: inline-block; background-color: #EF840A; margin: 3px 0; -webkit-transition: -webkit-transform .3s ease; 
+    transition: -webkit-transform .3s ease; -o-transition: transform .3s ease; transition: transform .3s ease; transition: transform .3s ease, -webkit-transform .3s ease; }
+.menu-toggle:hover .toggle-text::after, .menu-toggle:hover .toggle-line { -webkit-animation-name: toggleLine;  animation-name: toggleLine; -webkit-animation-duration: .5s; 
+    animation-duration: .5s; -webkit-animation-play-state: running; animation-play-state: running; -webkit-animation-timing-function: ease; animation-timing-function: ease; }
+.toggle-line:last-child { -webkit-animation-delay: .1s; animation-delay: .1s; }
+.menu-toggle .toggle-lines:not(.collapsed) .toggle-line:first-child { -webkit-transform: rotate(-135deg); -ms-transform: rotate(-135deg); transform: rotate(-135deg); }
+.menu-toggle .toggle-lines:not(.collapsed) .toggle-line:last-child { -webkit-transform: rotate(-45deg); -ms-transform: rotate(-45deg); transform: rotate(-45deg); margin-top: -5px; }
+
+
 @media (max-width: 768px) {
     #ball { display: none; }
 }
+@media (max-width: 991px) {
+    .navbar>.container-fluid { display: flex; flex-wrap: inherit; align-items: center; justify-content: end; }
+    nav.navbar { position: fixed; right: 0; }
+    nav.navbar .navbar-collapse { background-color: #d7d7d7; margin-right: -25px; margin-left: -25px; width: 100vw; }
+    nav.navbar .navbar-collapse .navbar-nav { margin: 20px 0 20px 20px !important; }
+    .logo { max-width: 120px; max-height: 120px; }
+}
+@media (min-width: 769px) {
+    .ml-4 { margin-left: 1.5rem !important; }
+    .vertical-even { display: flex; flex-direction: column; justify-content: space-between; }
+    /*input#reservation_date, input#number_of_people, select#reservation_time { width: auto; }*/
+}
+@media (min-width: 992px) {
+    .menu-toggle { display: none; }
+}
+
 @keyframes ripple-1 {
     0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(1.5); opacity: 0; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
 }
 @keyframes ripple-2 {
     0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(1.5); opacity: 0; }
+    50% { transform: scale(1.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes toggleLine {
+    0% { -webkit-clip-path: inset(0% 0% 0% 0%); clip-path: inset(0% 0% 0% 0%); }
+    50% { -webkit-clip-path: inset(0% 0% 0% 100%); clip-path: inset(0% 0% 0% 100%); }
+    51% { -webkit-clip-path: inset(0% 100% 0% 0%); clip-path: inset(0% 100% 0% 0%); }
+    100% { -webkit-clip-path: inset(0% 0% 0% 0%); clip-path: inset(0% 0% 0% 0%); }
 }

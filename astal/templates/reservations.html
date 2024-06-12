@@ -2,9 +2,9 @@
 {% block content %}
 <h1>Rezervacije</h1>
 <form action="" method="POST">
-    <div class="form-group mb-4">
+    <div class="form-group mb-4 text-center">
         <label for="reservation_date">Izaberite datum rezervacije</label>
-        <input class="form-control" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ selected_date }}">
+        <input class="form-control d-inline-block" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ selected_date }}">
     </div>
 </form>
 
@@ -117,7 +117,7 @@
     </div>
 </div>
 {% else %}
-<p>Nema rezervacija</p>
+<p class="text-center w-100 alert">Nema rezervacija za izabrani datum</p>
 {% endif %}
 {% endblock content %}
 

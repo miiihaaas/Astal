@@ -34,25 +34,33 @@
             <div class="logo">
                 <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
             </div>
-            <nav class="navbar sticky-top navbar-expand-lg navbar-light">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <div class="container-fluid">
-                    <ul class="navbar-nav" style="margin-left: auto;">
-                        <li class="nav-item">
-                            <a class="navbar-brand" href="{{ url_for('main.settings') }}">Podešavanja</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand" href="{{ url_for('admin.reservations') }}">Rezervacije</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand" href="{{ url_for('admin.calendar') }}">Kalendar</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand" href="{{ url_for('main.home') }}">Astal</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand" href="{{ url_for('admin.logout') }}">Odjavite se</a>
-                        </li>
-                    </ul>
+                    <div class="menu-toggle">
+                        <button class="toggle-lines collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="toggle-line"></span>
+                            <span class="toggle-line"></span>
+                        </button>
+                    </div>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav" style="margin-left: auto;">
+                            <li class="nav-item">
+                                <a class="navbar-brand" href="{{ url_for('main.settings') }}">Podešavanja</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="navbar-brand" href="{{ url_for('admin.reservations') }}">Rezervacije</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="navbar-brand" href="{{ url_for('admin.calendar') }}">Kalendar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="navbar-brand" href="{{ url_for('main.home') }}">Astal</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="navbar-brand" href="{{ url_for('admin.logout') }}">Odjavite se</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </nav>
         </header>
@@ -94,6 +102,13 @@
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var path = window.location.pathname;
+                var page = path.split("/").pop().split(".")[0];
+                document.body.classList.add(page);
+            });
+        </script>
 
         {% block scripts %}{% endblock %}
     </body>
