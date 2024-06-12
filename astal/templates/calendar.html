@@ -3,12 +3,10 @@
 <h1>Upravljanje rezervacijama</h1>
 <form action="" method="POST">
     <div class="row">
-        <div class="form-group col">
+        <div class="form-group col text-center mb-5">
             <label for="reservation_date">Izaberite datum rezervacije</label>
-            <input class="form-control" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ selected_date }}">
-        </div>
-        <div class="form-group col">
-            <a class="btn btn-primary mt-4" href="" id="reservation_link">Rezervacije</a>
+            <input class="form-control d-inline-block" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ selected_date }}">
+            <a class="btn btn-primary ml-4" href="" id="reservation_link">Rezervacije</a>
         </div>
     </div>
 </form>
