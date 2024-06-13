@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from flask import flash, redirect, url_for
 from flask_mail import Message
 from astal.models import User
-from astal import db, mail
+from astal import db, mail, celery
 
 
 def define_min_and_max_dates():
@@ -75,32 +75,50 @@ def check_availability(start_time, intervals, table_options, num_intervals):
     return (False, available_intervals)
 
 
+# def get_interval_options(intervals, min_date, reservation_date, table_options, check_availability):
+#     # print('* get_interval_options()')
+#     time_now_obj = datetime.now()
+#     interval_options = []
+    
+#     for interval_kay, details in intervals.items():
+#         interval_kay_obj = datetime.combine(min_date, datetime.strptime(interval_kay, "%H:%M").time())
+#         # print(f"{time_now_obj=}, {interval_kay_obj=}")
+        
+#         if reservation_date == min_date:
+#             # print(f'{reservation_date=}, {min_date=}')
+#             if time_now_obj < interval_kay_obj:
+#                 available, available_intervals = check_availability(interval_kay, intervals, table_options, 12)
+#                 if available_intervals == 12:
+#                     interval_options.append([interval_kay, f''])
+#                 elif available_intervals > 8:
+#                     interval_options.append([interval_kay, f' - dostupno {available_intervals * 15} minuta'])
+#         else:
+#             available, available_intervals = check_availability(interval_kay, intervals, table_options, 12)
+#             if available_intervals == 12:
+#                 interval_options.append([interval_kay, f''])
+#             elif available_intervals > 8:
+#                 interval_options.append([interval_kay, f' - dostupno {available_intervals * 15} minuta'])
+    
+#     return interval_options
+
+
 def get_interval_options(intervals, min_date, reservation_date, table_options, check_availability):
-    # print('* get_interval_options()')
     time_now_obj = datetime.now()
     interval_options = []
     
     for interval_kay, details in intervals.items():
-        interval_kay_obj = datetime.combine(min_date, datetime.strptime(interval_kay, "%H:%M").time())
-        # print(f"{time_now_obj=}, {interval_kay_obj=}")
+        interval_kay_time = datetime.strptime(interval_kay, "%H:%M").time()
+        interval_kay_obj = datetime.combine(reservation_date, interval_kay_time)
         
-        if reservation_date == min_date:
-            # print(f'{reservation_date=}, {min_date=}')
-            if time_now_obj < interval_kay_obj:
-                available, available_intervals = check_availability(interval_kay, intervals, table_options, 12)
-                if available_intervals == 12:
-                    interval_options.append([interval_kay, f''])
-                elif available_intervals > 8:
-                    interval_options.append([interval_kay, f' - dostupno {available_intervals * 15} minuta'])
-        else:
+        if reservation_date > min_date or (reservation_date == min_date and time_now_obj < interval_kay_obj):
             available, available_intervals = check_availability(interval_kay, intervals, table_options, 12)
             if available_intervals == 12:
-                interval_options.append([interval_kay, f''])
+                interval_options.append([interval_kay, ''])
             elif available_intervals > 8:
                 interval_options.append([interval_kay, f' - dostupno {available_intervals * 15} minuta'])
     
     return interval_options
-    
+
 
 
 
@@ -194,6 +212,8 @@ def book_tables(start_time, intervals, reservation_id, user_id, table_options, n
 
     return intervals
 
+#! nastavi sa istražvanjem na GPT 
+#! https://chatgpt.com/g/g-cKXjWStaE-python/c/f80b28cc-e589-4fe4-9f95-f0f0cb60d85f
 
 def send_email(user, new_reservation):
     subject = f'Potvrda rezervacije - {new_reservation.reservation_number}'
@@ -206,5 +226,19 @@ def send_email(user, new_reservation):
     try:
         mail.send(message)
         flash('Mejl je uspesno poslat', 'success')
+    except Exception as e:
+        flash('Greska prilikom slanja mejla: ' + str(e), 'danger')
+
+@celery.task
+def schedule_emal(new_reservation):
+    subject = f'Podsetnik rezervacije - {new_reservation.reservation_number}'
+    recipients = [new_reservation.user.email]
+    cc = [] #! staviti mejl administratora
+    body = f'Rezervacij {new_reservation.reservation_number} počinje uskoro. Podsećamo vas da će rezervacija početi u {new_reservation.start_time} na datum {new_reservation.reservation_date}.'
+    message = Message(subject, recipients=recipients, cc=cc)
+    message.html = body
+    
+    try:
+        mail.send(message)
     except Exception as e:
         flash('Greska prilikom slanja mejla: ' + str(e), 'danger')
