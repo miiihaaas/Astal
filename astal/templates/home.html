@@ -57,6 +57,7 @@
                     <button class="animated-btn text-white" type="submit" id="reservation_button" name="reservation_button" onclick="document.getElementById('submit_type').value='button'">Rezerviši</button>
                     {% else %}
                     Nije moguće rezervisati, za više informacija konaktirajte nas na broj...
+                    <input type="hidden" id="submit_type" name="submit_type" value="">
                     {% endif %}
                 </div>
             </div>
@@ -67,16 +68,24 @@
 {% block scripts %}
 <script>
     document.addEventListener('change', function (e) {
-        if (e.target.id === 'reservation_date' || e.target.id === 'number_of_people') {  // Ispravljeno ime polja
+        if (e.target.id === 'reservation_date' || e.target.id === 'number_of_people') {
+            console.log('Detected change in reservation_date or number_of_people');
             document.getElementById('submit_type').value = 'input_change';
             var form = document.querySelector('form');
             var formData = new FormData(form);
+
             fetch(form.action, {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
             .then(data => {
+                console.log('Received response from server');
                 document.open();
                 document.write(data);
                 document.close();
@@ -85,4 +94,5 @@
         }
     });
 </script>
+
 {% endblock scripts %}
