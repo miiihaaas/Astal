@@ -97,7 +97,7 @@ def home():
             print(f'drugi mejl bi trebalo da stigne u {email_time=}')
             schedule_emal.apply_async(args=[new_reservation.id], eta=email_time)
             print(f'ovo je info iza funkcije shedule_mail: args={new_reservation.id=}, eta={email_time=}')
-            test.delay()
+            # test.delay()
             #!
             
             reservations = Calendar.query.filter_by(date=datetime.strptime(reservation_date, '%Y-%m-%d').date()).first()
@@ -173,3 +173,11 @@ def home():
                             reservation_date=reservation_date,
                             number_of_people=number_of_people,
                             interval_options=interval_options)
+    
+
+@main.route('/celery_test/<int:repetitions>', methods=['GET', 'POST'])
+def celery_test(repetitions):
+    for i in range(repetitions):
+        print(f'* iteracija broj {i}')
+        test.delay()
+    return 'celery test'
