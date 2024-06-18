@@ -1,11 +1,12 @@
 
 import calendar
 from datetime import datetime, timedelta
+from time import sleep
 
 from flask import flash, redirect, url_for
 from flask_mail import Message
-from astal.models import User
-from astal import db, mail, celery
+from astal.models import Reservation, User
+from astal import db, mail, celery, app
 
 
 def define_min_and_max_dates():
@@ -230,15 +231,27 @@ def send_email(user, new_reservation):
         flash('Greska prilikom slanja mejla: ' + str(e), 'danger')
 
 @celery.task
-def schedule_emal(new_reservation):
-    subject = f'Podsetnik rezervacije - {new_reservation.reservation_number}'
-    recipients = [new_reservation.user.email]
-    cc = [] #! staviti mejl administratora
-    body = f'Rezervacij {new_reservation.reservation_number} počinje uskoro. Podsećamo vas da će rezervacija početi u {new_reservation.start_time} na datum {new_reservation.reservation_date}.'
-    message = Message(subject, recipients=recipients, cc=cc)
-    message.html = body
+def schedule_emal(reservation_id):
+    print(f'* pokrenut je Celery: {reservation_id=}')
+    with app.app_context():
+        reservation = Reservation.query.get(reservation_id)
+        if reservation:
+            subject = f'Podsetnik rezervacije - {reservation.reservation_number}'
+            recipients = [reservation.user.email]
+            cc = [] #! staviti mejl administratora
+            body = f'Rezervacija {reservation.reservation_number} počinje uskoro. Podsećamo vas da će rezervacija početi u {reservation.start_time} na datum {reservation.reservation_date}.'
+            message = Message(subject, recipients=recipients, cc=cc)
+            message.html = body
     
-    try:
-        mail.send(message)
-    except Exception as e:
-        flash('Greska prilikom slanja mejla: ' + str(e), 'danger')
+        try:
+            mail.send(message)
+        except Exception as e:
+            print('Greska prilikom slanja mejla: ' + str(e), 'danger')
+
+
+@celery.task
+def test():
+    print('** Test celery task **')
+    sleep(10)
+    print('posle 10 sekundi')
+    return('Test je uspešno izvršen')

@@ -76,5 +76,5 @@ class Settings(db.Model):
     
 
 with app.app_context():
-    print('models: checkopint -> posle ovog koda treba da se inicira db!!')
+    # print('models: checkopint -> posle ovog koda treba da se inicira db!!')
     db.create_all()

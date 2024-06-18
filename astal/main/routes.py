@@ -5,7 +5,7 @@ from flask_login import current_user
 from astal import db
 from astal.admin.functions import create_working_intervals, define_working_hours
 from astal.models import Settings, User, Reservation, Calendar
-from astal.main.functions import book_tables, check_availability, calculate_required_tables, get_interval_options, is_valid_user_input, add_user_to_db, define_min_and_max_dates, schedule_emal, send_email
+from astal.main.functions import book_tables, check_availability, calculate_required_tables, get_interval_options, is_valid_user_input, add_user_to_db, define_min_and_max_dates, schedule_emal, send_email, test
 
 
 main = Blueprint('main', __name__)
@@ -84,17 +84,21 @@ def home():
                                             end_time=reservation_end_time,
                                             note=note,
                                             user_id=user.id)
+            db.session.add(new_reservation)
+            db.session.commit()
             send_email(user, new_reservation)
+            print(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')
             #!
             reservation_datetime = datetime.combine(
                 new_reservation.reservation_date,
                 datetime.strptime(new_reservation.start_time, "%H:%M").time()
             )
-            email_time = reservation_datetime - timedelta(hours=4)
-            schedule_emal.apply_async(args=[new_reservation], eta=email_time)
+            email_time = reservation_datetime - timedelta(hours=3)
+            print(f'drugi mejl bi trebalo da stigne u {email_time=}')
+            schedule_emal.apply_async(args=[new_reservation.id], eta=email_time)
+            print(f'ovo je info iza funkcije shedule_mail: args={new_reservation.id=}, eta={email_time=}')
+            test.delay()
             #!
-            db.session.add(new_reservation)
-            db.session.commit()
             
             reservations = Calendar.query.filter_by(date=datetime.strptime(reservation_date, '%Y-%m-%d').date()).first()
             if not reservations:

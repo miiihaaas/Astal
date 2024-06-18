@@ -40,23 +40,40 @@ mail = Mail(app)
 
 
 # Celery konfiguracija
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+app.config['CELERY_BROKER_URL'] = 'amqp://guest:guest@localhost:5672//'
+app.config['CELERY_RESULT_BACKEND'] = 'rpc://'
+app.config['BROKER_HEARTBEAT'] = 10
+app.config['BROKER_CONNECTION_TIMEOUT'] = 20
+app.config['CELERY_TASK_ACKS_LATE'] = True  # Dodato da omogući kasno potvrđivanje
+app.config['CELERY_BROKER_CONNECTION_MAX_RETRIES'] = 3  # Maksimalni broj pokušaja ponovnog povezivanja
+app.config['CELERY_BROKER_HEARTBEAT'] = 30  # Vremenski interval između heartbeat poruka
+app.config['CELERY_BROKER_CONNECTION_TIMEOUT'] = 30  # Vremenski interval za timeout veze
+app.config['CELERY_TASK_SERIALIZER'] = 'json'
+app.config['CELERY_RESULT_SERIALIZER'] = 'json'
+app.config['CELERY_ACCEPT_CONTENT'] = ['json']
+app.config['CELERY_TIMEZONE'] = 'Europe/Belgrade'
+app.config['CELERY_ENABLE_UTC'] = True
 
-celery = Celery(
-    app.import_name,
-    broker=app.config['CELERY_BROKER_URL'],
-    backend=app.config['CELERY_RESULT_BACKEND']
-)
-celery.conf.update(app.config)
 
-class ContextTask(celery.Task):
-    def __call__(self, *args, **kwargs):
-        with app.app_context():
-            return self.run(*args, **kwargs)
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        broker=app.config['CELERY_BROKER_URL'],
+        backend=app.config['CELERY_RESULT_BACKEND'],
+        include=['astal.main.routes', 'astal.admin.routes', 'astal.main.functions', 'astal.admin.functions']
+    )
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
 
-celery.Task = ContextTask
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
 
+    celery.Task = ContextTask
+    return celery
+
+celery = make_celery(app)
 
 from astal.main.routes import main
 from astal.admin.routes import admin
