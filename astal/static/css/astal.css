@@ -15,7 +15,7 @@ label.cormorant { font-size: 24px; /*font-style: italic;*/ color: #0bbbef; }
 .astal-form input, .astal-form select, .astal-form textarea { background-color: transparent !important; border: 0 !important; border-bottom: 1px solid #999 !important; border-radius: 0 !important; }
 .astal-form input, .astal-form select, .astal-form textarea { margin-bottom: 30px; }
 h1.astal-heading { text-align: center; font-size: clamp(2rem, 5vw, 8rem); margin: 0 0 50px 0; }
-.form-control { width: auto; }
+.form-control:not(textarea) { width: auto; }
 .form-control:focus { box-shadow: none; border-bottom-color: #c8d400 !important; }
 .astal-form .btn { background-color: #0bbbef !important; border-color: #0bbbef !important; }
 .animated-btn { width: 120px; height: 120px; border-radius: 50%; line-height: 120px; display: inline-block; text-align: center; font-size: 20px; background-color: transparent; position: relative; background-repeat: no-repeat; background-position: 50% 50%; border: 0; }
