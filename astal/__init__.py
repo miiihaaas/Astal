@@ -31,8 +31,8 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER') #dodati u .env: 'mail.putninalozi.online'
 app.config['MAIL_PORT'] = os.getenv('MAIL_PORT') #dodati u .env: 465
-app.config['MAIL_USE_TLS'] = True #! bilo je False
-app.config['MAIL_USE_SSL'] = False #! bilo je True
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS')
+app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL')
 app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer
 app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer -- za 2 step verification: https://support.google.com/accounts/answer/185833
 app.config['MAIL_DEFAULT_SENDER'] = ('Astal_dev', 'miiihaaas@gmail.com')
