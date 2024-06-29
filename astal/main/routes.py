@@ -175,9 +175,9 @@ def home():
                             interval_options=interval_options)
     
 
-@main.route('/celery_test/<int:repetitions>', methods=['GET', 'POST'])
-def celery_test(repetitions):
-    for i in range(repetitions):
-        print(f'* iteracija broj {i}')
-        test.delay()
-    return 'celery test'
+# @main.route('/celery_test/<int:repetitions>', methods=['GET', 'POST'])
+# def celery_test(repetitions):
+#     for i in range(repetitions):
+#         print(f'* iteracija broj {i}')
+#         test.delay()
+#     return 'celery test'

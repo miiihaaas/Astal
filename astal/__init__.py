@@ -29,13 +29,20 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
-app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER') #dodati u .env: 'mail.putninalozi.online'
-app.config['MAIL_PORT'] = os.getenv('MAIL_PORT') #dodati u .env: 465
-app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS')
-app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL')
-app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer
-app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS') # https://www.youtube.com/watch?v=IolxqkL7cD8&ab_channel=CoreySchafer -- za 2 step verification: https://support.google.com/accounts/answer/185833
-app.config['MAIL_DEFAULT_SENDER'] = ('Astal_dev', 'miiihaaas@gmail.com')
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS').lower() in ['true', 'on', '1']
+app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL').lower() in ['true', 'on', '1']
+app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER')
+app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
+print(f"debug mail configuration {app.config['MAIL_SERVER']=}")
+print(f"debug mail configuration {app.config['MAIL_PORT']=}")
+print(f"debug mail configuration {app.config['MAIL_USE_TLS']=}, tip: {type(app.config['MAIL_USE_TLS'])=}")
+print(f"debug mail configuration {app.config['MAIL_USE_SSL']=}, tip: {type(app.config['MAIL_USE_TLS'])=}")
+print(f"debug mail configuration {app.config['MAIL_USERNAME']=}")
+print(f"debug mail configuration {app.config['MAIL_PASSWORD']=}")
+print(f"debug mail configuration {app.config['MAIL_DEFAULT_SENDER']=}")
 mail = Mail(app)
 
 
