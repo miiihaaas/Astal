@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
 {% block content %}
-<h1>Upravljanje rezervacijama</h1>
+<h1>Dnevnik raspoloživosti stolova</h1>
 <form action="" method="POST">
     <div class="row">
         <div class="form-group col text-center mb-5">
-            <label class="mt-2 mb-2" for="reservation_date">Izaberite datum rezervacije</label>
+            <label class="mt-2 mb-2" for="reservation_date">Izaberite datum</label>
             <input class="form-control d-inline-block mt-2 mb-2" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ selected_date }}">
             <a class="btn btn-primary ml-4 mt-2 mb-2" href="" id="reservation_link">Rezervacije</a>
         </div>
@@ -14,12 +14,12 @@
     <thead>
         <tr>
             <th>Interval</th>
-            <th>Broj Raspoloživih stolova 2</th>
-            <th>Broj rezervisanih stolova 2</th>
-            <th>Broj slobodnih stolova 2</th>
-            <th>Broj Raspoloživih stolova 4</th>
-            <th>Broj rezervisanih stolova 4</th>
-            <th>Broj slobodnih stolova 4</th>
+            <th>Broj raspoloživih stolova (2)</th>
+            <th>Broj rezervisanih stolova (2)</th>
+            <th>Broj slobodnih stolova (2)</th>
+            <th>Broj raspoloživih stolova (4)</th>
+            <th>Broj rezervisanih stolova (4)</th>
+            <th>Broj slobodnih stolova (4)</th>
         </tr>
     </thead>
     <tbody>
