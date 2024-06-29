@@ -143,7 +143,7 @@ def add_user_to_db(user_inputs):
     if valid_inputs:
         user = User.query.filter_by(email=user_inputs[0]).first()
         if user:
-            flash('Korisnik sa tim email adresom vec postoji', 'danger')
+            # flash('Korisnik sa tim email adresom vec postoji', 'danger')
             user.name = user_inputs[1].title()
             user.surname = user_inputs[2].title()
             user.phone = user_inputs[3]
