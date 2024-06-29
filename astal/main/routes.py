@@ -22,7 +22,7 @@ def settings():
         settings.default_number_of_tables_2 = int(request.form.get('default_number_of_tables_2'))
         settings.default_number_of_tables_4 = int(request.form.get('default_number_of_tables_4'))
         db.session.commit()
-        flash('Uspesno ste izmenili postavke', 'success')
+        flash('Uspešno ste izmenili podešavanja.', 'success')
         return redirect(url_for('main.settings'))
     return render_template('settings.html', settings=settings)
 
@@ -129,8 +129,13 @@ def home():
                 osoba = "osobe"
             else:
                 osoba = "osoba"
-            flash(f'Uspesno ste napravili rezervaciju za {number_of_people} {osoba}. Rezervacija se odnosi na datum {reservation_date} u {reservation_time}', 'success')
-            return render_template('conformation_page.html', reservation_number=reservation_number)
+            flash(f'Uspešno ste napravili rezervaciju. Informacije o rezervaciji će stići na vašu email adresu.', 'success')
+            return render_template('conformation_page.html', 
+                                    reservation_number=reservation_number,
+                                    reservation_date=reservation_date,
+                                    reservation_time=reservation_time,
+                                    number_of_people=number_of_people,
+                                    note=note)
         elif submit_type == 'input_change':
             print('izmena datuma ili broja osoba')
             # reservation_date=datetime.strptime(reservation_date, '%Y-%m-%d').date()

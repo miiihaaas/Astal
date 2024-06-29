@@ -23,6 +23,12 @@ h1.astal-heading { text-align: center; font-size: clamp(2rem, 5vw, 8rem); margin
 .animated-btn::after { background: rgba(200, 212, 0, 0.8); animation: ripple-2 2s infinite ease-in-out; animation-delay: 0.5s; }
 .btn-primary { background-color: #0bbbef; border-color: #0bbbef; }
 .btn-primary:hover { background-color: #0799c5; border-color: #0799c5; }
+/* dodao mihas */
+.btn-primary:disabled { background-color: #0799c5; border-color: #0799c5; }
+.btn-danger { background-color: #f58220; border-color: #f58220; }
+.btn-danger:hover { background-color: #cb6811; border-color: #cb6811; }
+.btn-danger:disabled { background-color: #f58220; border-color: #f58220; }
+/* dodao mihas */
 
 .pre-alert { margin-top: 50px; }
 .alert { border-radius: 0; font-family: 'Cormorant Garamond', serif; font-size: 32px; /*font-style: italic;*/ width: fit-content; }

@@ -71,7 +71,7 @@ def cancel_reservation(reservation, updated_intervals):
                     details['booked_tables_4'] -= reservation_details['reserved_tables_4']
                     details['free_tables_4'] += reservation_details['reserved_tables_4']
     updated_intervals = updated_intervals
-    reservation.status = 'canceled'
+    reservation.status = 'cancelled'
     db.session.commit()
     return updated_intervals
 
@@ -138,7 +138,7 @@ def extend_reservation(reservation, updated_intervals):
                 
                 reservation.end_time = next_interval_end.strftime("%H:%M")
                 db.session.commit()
-                flash(f'za rezervaciju {reservation.reservation_number} je uspešno produženo vreme do {reservation.end_time}', 'success')
+                flash(f'Vreme za rezervaciju {reservation.reservation_number} je uspešno produženo do {reservation.end_time}.', 'success')
             else:
                 flash(f'Nema dovoljno stolova da bi se produžila rezervacija {reservation.reservation_number}', 'danger')
 

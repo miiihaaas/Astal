@@ -3,7 +3,7 @@
 <h1>Rezervacije</h1>
 <form action="" method="POST">
     <div class="form-group mb-4 text-center">
-        <label for="reservation_date">Izaberite datum rezervacije</label>
+        <label for="reservation_date">Izaberite datum</label>
         <input class="form-control d-inline-block" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ selected_date }}">
     </div>
 </form>
@@ -51,7 +51,11 @@
                         Prisustvo
                     </button>
                 {% else %}
-                    <button>{{ reservation.status }}</button>
+                    {% if reservation.status == 'cancelled' %}
+                        <button class="btn btn-danger" disabled>Otkazana</button>
+                    {% elif reservation.status == 'finished' %}
+                        <button class="btn btn-primary" disabled>Završena</button>
+                    {% endif %}
                 {% endif %}
             </td>
             {% endif %}
@@ -106,11 +110,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger" id="cancel" name="action" value="cancel">Gosti se nisu pojavili</button>
-                    <button type="submit" class="btn btn-primary" id="confirm" name="action" value="confirm">Gosti su se pojavili</button>
-                    <button type="submit" class="btn btn-primary" id="finish" name="action" value="finish">Gosti otišli</button>
-                    <button type="submit" class="btn btn-primary" id="extend" name="action" value="extend">Produži vreme rezervacije</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                    <!-- JS menja dugmiće -->
                 </div>
             </form>
         </div>
@@ -165,12 +165,28 @@
             var modalFooter = $('.modal-footer');
             modalFooter.empty(); // clear previous buttons
 
+            // Get current time
+            console.log("reservationData.start_time=", reservationData.start_time)
+            var currentTime = new Date();
+            var reservationStartTime = new Date();
+            var reservationTimeParts = reservationData.start_time.split(':');
+            reservationStartTime.setHours(reservationTimeParts[0], reservationTimeParts[1]);
+            console.log("currentTime=",currentTime);
+            console.log("reservationStartTime=",reservationStartTime);
+
             if (modalType === 'prisustvo') {
-                modalFooter.append('<button type="submit" class="btn btn-danger" id="cancel" name="action" value="cancel">Gosti se nisu pojavili</button>');
-                modalFooter.append('<button type="submit" class="btn btn-primary" id="confirm" name="action" value="confirm">Gosti su se pojavili</button>');
+                if (currentTime >= reservationStartTime) {
+                    modalFooter.append('<button type="submit" class="btn btn-danger" id="cancel" name="action" value="cancel">Gosti se nisu pojavili</button>');
+                    modalFooter.append('<button type="submit" class="btn btn-primary" id="confirm" name="action" value="confirm">Gosti su se pojavili</button>');
+                    modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nazad</button>');
+                } else {
+                    modalFooter.append('<button type="submit" class="btn btn-danger" id="cancel" name="action" value="cancel">Gosti su otkazali rezervciju</button>');
+                    modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nazad</button>');
+                }
             } else if (modalType === 'intervali') {
                 modalFooter.append('<button type="submit" class="btn btn-primary" id="finish" name="action" value="finish">Gosti otišli</button>');
-                modalFooter.append('<button type="submit" class="btn btn-primary" id="extend" name="action" value="extend">Produži vreme rezervacije</button>');
+                modalFooter.append('<button type="submit" class="btn btn-primary" id="extend" name="action" value="extend">+ 15 min</button>');
+                modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nazad</button>');
             }
 
             $('#exampleModal').modal('show');

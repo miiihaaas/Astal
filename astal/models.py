@@ -46,7 +46,7 @@ class Reservation(db.Model):
     note = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-    status = db.Column(db.String(20), nullable=False, default='pending') #! pending, confirmed, canceled, finished
+    status = db.Column(db.String(20), nullable=False, default='pending') #! pending, confirmed, cancelled, finished
 
     def __repr__(self):
         return f"Reservation('{self.reservation_date}', '{self.number_of_people}', '{self.amount}')"

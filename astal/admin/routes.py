@@ -81,15 +81,15 @@ def edit_reservation():
     if action == 'confirm':
         # print(f"{request.form=}")
         confirm_reservation(reservation)
-        flash(f'Rezervacija {reservation.reservation_number} na ime {reservation.user.name} {reservation.user.surname} je uspešno potvrđena', 'success')
+        flash(f'Rezervacija {reservation.reservation_number} na ime {reservation.user.name} {reservation.user.surname} je uspešno potvrđena.', 'success')
     elif action == 'cancel':
         # print(f"{request.form=}")
         updated_intervals = cancel_reservation(reservation, updated_intervals)
-        flash(f'Rezervacija {reservation.reservation_number} na ime {reservation.user.name} {reservation.user.surname} je uspešno otkazana', 'danger')
+        flash(f'Rezervacija {reservation.reservation_number} na ime {reservation.user.name} {reservation.user.surname} je uspešno otkazana.', 'danger')
     elif action == 'finish':
         # # print(f"{request.form=}")
         updated_intervals = finish_reservation(reservation, updated_intervals)
-        flash(f'Rezervacija {reservation.reservation_number} na ime {reservation.user.name} {reservation.user.surname} je uspešno zavrsena', 'success')
+        flash(f'Rezervacija {reservation.reservation_number} na ime {reservation.user.name} {reservation.user.surname} je uspešno završena.', 'success')
     elif action == 'extend':
         # print(f"{request.form=}")
         extend_reservation(reservation, updated_intervals)
@@ -180,7 +180,7 @@ def update_tables():
             'free_tables_2': details['free_tables_2'],
             'free_tables_4': details['free_tables_4'],
         })
-    flash(f'Uspesno ste promenili broj stolova za datum {selected_date} i interval {interval_to_update}', 'success')
+    flash(f'Uspešno ste promenili broj raspoloživih stolova za datum {selected_date} i za interval {interval_to_update}.', 'success')
     # return render_template('calendar.html', 
     #                         reservations=reservations, 
     #                         selected_date=selected_date,

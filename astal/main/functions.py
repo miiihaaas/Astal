@@ -226,7 +226,8 @@ def send_email(user, new_reservation):
     
     try:
         mail.send(message)
-        flash('Mejl je uspesno poslat', 'success')
+        # flash('Mejl je uspesno poslat', 'success')
+        print('mejl je uspešno poslat')
     except Exception as e:
         flash('Greska prilikom slanja mejla: ' + str(e), 'danger')
 
