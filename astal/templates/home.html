@@ -7,47 +7,80 @@
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-3">
-                    <label for="reservation_date" class="cormorant">Izaberite datum</label>
-                    <input class="form-control" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ reservation_date }}">
+                    {{ form.reservation_date.label(class="cormorant") }}
+                    {{ form.reservation_date(class="form-control", id="reservation_date", min=min_date, max=max_date, value=form.reservation_date.data) }}
+                    {% for error in form.reservation_date.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
                 <div class="col-md-2">
-                    <label for="number_of_people" class="cormorant">Broj osoba</label>
-                    <input class="form-control" name="number_of_people" id="number_of_people" type="number" min="1" value="{{ number_of_people }}">
+                    {{ form.number_of_people.label(class="cormorant") }}
+                    {{ form.number_of_people(class="form-control", id="number_of_people", type="number", value=form.number_of_people.data) }}
+                    {% for error in form.number_of_people.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
                 <div class="col-md-3">
                     {% if interval_options %}
-                    <label for="reservation_time" class="cormorant">Izaberite vreme rezervacije</label>
-                    <select class="form-select" name="reservation_time" id="reservation_time">
-                        {% for interval in interval_options %}
-                            <option value="{{ interval[0] }}">{{ interval[0] }}{{ interval[1] }} </option>
-                        {% endfor %}
-                    </select>
+                    {{ form.reservation_time.label(class="cormorant") }}
+                    {{ form.reservation_time(class="form-select", id="reservation_time") }}
+                    {% for error in form.reservation_time.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
                 <div class="col-md-2"></div>
             </div>
             <div class="row">
                 <div class="col-md-3">
-                    <label for="user_email" id="user_email" class="cormorant">Mejl</label>
-                    <input class="form-control" name="user_email" id="user_email" type="email" value="{{ user_email }}">
+                    {{ form.user_email.label(class="cormorant") }}
+                    {% if form.user_email.data %}
+                    {{ form.user_email(class="form-control", id="user_email", value=form.user_email.data) }}
+                    {% else %}
+                    {{ form.user_email(class="form-control", id="user_email") }}
+                    {% endif %}
+                    {% for error in form.user_email.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div> 
                 <div class="col-md-3">
-                    <label for="user_name" class="cormorant">Ime</label>
-                    <input class="form-control" name="user_name" id="user_name" type="text" value="{{ user_name }}">
+                    {{ form.user_name.label(class="cormorant") }}
+                    {% if form.user_name.data %}
+                    {{ form.user_name(class="form-control", id="user_name", value=form.user_name.data) }}
+                    {% else %}
+                    {{ form.user_name(class="form-control", id="user_name") }}
+                    {% endif %}
+                    {% for error in form.user_name.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
                 <div class="col-md-3">
-                    <label for="user_surname" class="cormorant">Prezime</label>
-                    <input class="form-control" name="user_surname" id="user_surname" type="text" value="{{ user_surname }}">
+                    {{ form.user_surname.label(class="cormorant") }}
+                    {% if form.user_surname.data %}
+                    {{ form.user_surname(class="form-control", id="user_surname", value=form.user_surname.data) }}
+                    {% else %}
+                    {{ form.user_surname(class="form-control", id="user_surname") }}
+                    {% endif %}
+                    {% for error in form.user_surname.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
                 <div class="col-md-3">
-                    <label for="user_phone" class="cormorant">Broj telefona</label>
-                    <input class="form-control" name="user_phone" id="user_phone" type="text" value="{{ user_phone }}">
+                    {{ form.user_phone.label(class="cormorant") }}
+                    {% if form.user_phone.data %}
+                    {{ form.user_phone(class="form-control", id="user_phone", value=form.user_phone.data) }}
+                    {% else %}
+                    {{ form.user_phone(class="form-control", id="user_phone") }}
+                    {% endif %}
+                    {% for error in form.user_phone.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
-                    <label for="user_note" class="cormorant">Napomena</label>
-                    <textarea class="form-control mb-4" name="user_note" id="user_note" type="text"></textarea>
+                    {{ form.user_note.label(class="cormorant") }}
+                    {{ form.user_note(class="form-control", id="user_note") }}
                 </div>
                 <div class="col-md-2"></div>
             </div>

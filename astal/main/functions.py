@@ -1,11 +1,13 @@
 
 import calendar
 from datetime import datetime, timedelta
+import re
 from time import sleep
 
 from flask import flash, redirect, url_for
 from flask_mail import Message
-from astal.models import Reservation, User
+from astal.admin.functions import define_working_hours
+from astal.models import Reservation, Settings, User, Calendar
 from astal import db, mail, celery, app
 
 
@@ -114,32 +116,61 @@ def get_interval_options(intervals, min_date, reservation_date, table_options, c
         if reservation_date > min_date or (reservation_date == min_date and time_now_obj < interval_kay_obj):
             available, available_intervals = check_availability(interval_kay, intervals, table_options, 12)
             if available_intervals == 12:
-                interval_options.append([interval_kay, ''])
+                interval_options.append([interval_kay, interval_kay])
             elif available_intervals > 8:
-                interval_options.append([interval_kay, f' - dostupno {available_intervals * 15} minuta'])
-    
+                interval_options.append([interval_kay, f'{interval_kay} - dostupno {available_intervals * 15} minuta'])
+    print(f'main/forms.py debug: {interval_options=}')
     return interval_options
 
 
 
 
-def is_valid_user_input(user_inputs):
+def is_valid_user_input(form):
+    user_email = form.user_email.data
+    user_name = form.user_name.data
+    user_surname = form.user_surname.data
+    user_phone = form.user_phone.data
+    user_inputs = [user_email, user_name, user_surname, user_phone]
+    valid_input = True
     if not user_inputs[0]:
         flash('Unesite email', 'danger')
-        return False
+        valid_input = False
+    if not re.match(r"^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{2,}$", user_inputs[0]):
+        flash('Email nije validan', 'danger')
+        valid_input = False
+    
     if not user_inputs[1]:
         flash('Unesite svoje Ime', 'danger')
-        return False
+        valid_input = False
+    if len(user_inputs[1]) < 2:
+        flash('Ime mora imati najmanje 2 slova', 'danger')
+        valid_input = False
+
     if not user_inputs[2]:
         flash('Unesite svoje Prezime', 'danger')
-        return False
+        valid_input = False
+    if len(user_inputs[2]) < 3:
+        flash('Prezime mora imati najmanje 3 slova', 'danger')
+        valid_input = False
+
     if not user_inputs[3]:
         flash('Unesite broj telefona', 'danger')
-        return False
-    return True
+        valid_input = False
+    if user_inputs[3] and not user_inputs[3].isdigit():
+        flash('Broj telefona treba da se sastoji samo od cifara', 'danger')
+        valid_input = False
+    if len(user_inputs[3]) < 9 or len(user_inputs[3]) > 13:
+        flash('Broj telefona mora imati izmedju 9 i 13 cifara', 'danger')
+        valid_input = False
+    return valid_input
 
-def add_user_to_db(user_inputs):
-    valid_inputs = is_valid_user_input(user_inputs)
+def add_user_to_db(form):
+    valid_inputs = is_valid_user_input(form)
+    user_email = form.user_email.data
+    user_name = form.user_name.data
+    user_surname = form.user_surname.data
+    user_phone = form.user_phone.data
+    user_inputs = [user_email, user_name, user_surname, user_phone]
     if valid_inputs:
         user = User.query.filter_by(email=user_inputs[0]).first()
         if user:
@@ -156,6 +187,49 @@ def add_user_to_db(user_inputs):
             return new_user
     else:
         return False
+
+def create_reservation(form, user):
+    settings = Settings.query.first()
+    reservation_date = form.reservation_date.data
+    number_of_people = form.number_of_people.data
+    note = form.user_note.data
+    # Pretpostavljamo da dobijate reservation_time iz request.form
+    reservation_time = form.reservation_time.data
+    print(f' *** {reservation_date=}')
+    print(f' *** {reservation_time=}')
+
+    # Pretvaramo reservation_time string u datetime objekat
+    reservation_time_obj = datetime.strptime(reservation_time, "%H:%M")
+
+    # Dodajemo 3 sata na reservation_time
+    reservation_end_time_obj = reservation_time_obj + timedelta(hours=3)
+
+    # Pretvaramo reservation_end_time_obj nazad u string
+    reservation_end_time = reservation_end_time_obj.strftime("%H:%M")
+    reservations = Reservation.query.filter_by(reservation_date=reservation_date).all()
+    reservation_number = f'{reservation_date}-{(len(reservations)+1):03d}'
+    new_reservation = Reservation(reservation_number=reservation_number,
+                                    reservation_date=reservation_date, 
+                                    number_of_people=number_of_people, 
+                                    amount=int(number_of_people) * settings.reservation_coast_per_person, 
+                                    start_time=reservation_time, 
+                                    end_time=reservation_end_time,
+                                    note=note,
+                                    user_id=user.id)
+    db.session.add(new_reservation)
+    db.session.commit()
+    return new_reservation
+
+
+def get_or_create_reservations(form):
+    reservations = Calendar.query.filter_by(date=form.reservation_date.data).first()
+    if not reservations:
+        new_reservations = define_working_hours(form.reservation_date.data.strftime('%Y-%m-%d'))
+        db.session.add(new_reservations)
+        db.session.commit()
+        reservations = Calendar.query.filter_by(date=form.reservation_date.data).first()
+    return reservations
+
 
 
 def book_tables(start_time, intervals, reservation_id, user_id, table_options, num_intervals):
@@ -217,10 +291,59 @@ def book_tables(start_time, intervals, reservation_id, user_id, table_options, n
 #! https://chatgpt.com/g/g-cKXjWStaE-python/c/f80b28cc-e589-4fe4-9f95-f0f0cb60d85f
 
 def send_email(user, new_reservation):
-    subject = f'Potvrda rezervacije - {new_reservation.reservation_number}'
+    settings = Settings.query.first()
+    subject = f'Potvrda rezervacije ({new_reservation.reservation_number}) u restoranu {settings.restaurant_name}'
     recipients = [user.email]
     cc = [] #! staviti mejl administratora
     body = f'Rezervacij {new_reservation.reservation_number} je uspesno kreirana na ime {user.name}. Uplaćena vredost od {new_reservation.amount} eura će biti umanjena od vrednosti računa.'
+    body = f'''Poštovani,
+
+Hvala vam što ste rezervisali sto u restoranu Ćatovića mlini. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: {new_reservation.reservation_number}.
+
+Detalji rezervacije:
+
+Datum i vreme: {new_reservation.reservation_date} {new_reservation.start_time}
+Ime gosta: {user.name}'''
+
+    if new_reservation.amount > 0:
+        body += f'''
+Uplaćena vrednost od {new_reservation.amount} eura će biti umanjena od vrednosti računa prilikom vaše posete.'''
+
+    body += '''
+Srdačan pozdrav,
+Restoran Ćatovića mlini'''
+
+#! html ready
+#! html ready
+    # body = f'''
+    # <html>
+    # <body>
+    # <p>Poštovani {user.name},</p>
+
+    # <p>Hvala vam što ste rezervisali sto u restoranu <strong>Ćatovića mlini</strong>. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: <strong>{new_reservation.reservation_number}</strong>.</p>
+
+    # <h3>Detalji rezervacije:</h3>
+    # <ul>
+    #     <li><strong>Datum i vreme:</strong> {new_reservation.reservation_date} {new_reservation.start_time}</li>
+    #     <li><strong>Ime gosta:</strong> {user.name}</li>
+    # </ul>'''
+
+    # if new_reservation.amount > 0:
+    #     body += f'''
+    # <p>Uplaćena vrednost od <strong>{new_reservation.amount} eura</strong> će biti umanjena od vrednosti računa prilikom vaše posete.</p>'''
+
+    # body += '''
+    # <p>Srdačan pozdrav,</p>
+    # <p><strong>Restoran Ćatovića mlini</strong></p>
+    # </body>
+    # </html>
+    # '''
+#! html ready
+#! html ready
+
+
+
+
     message = Message(subject, recipients=recipients, cc=cc)
     message.html = body
     
