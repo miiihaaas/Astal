@@ -119,7 +119,7 @@ def calendar():
         intervals = None
         # print(f'nije kreiran datum {selected_date=}')
     if not intervals:
-        new_reservations = define_working_hours(settings, selected_date.strftime('%Y-%m-%d'))
+        new_reservations = define_working_hours(selected_date.strftime('%Y-%m-%d'))
         db.session.add(new_reservations)
         db.session.commit()
         intervals = json.loads(Calendar.query.filter_by(date=selected_date).first().intervals)

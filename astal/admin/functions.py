@@ -2,10 +2,11 @@
 from datetime import datetime, timedelta
 from flask import flash, json
 from astal import db
-from astal.models import Calendar
+from astal.models import Calendar, Settings
 
 
-def create_working_intervals(settings, reservation_date):
+def create_working_intervals(reservation_date):
+    settings = Settings.query.first()
     reservation_date_obj = datetime.strptime(reservation_date, '%Y-%m-%d').date()
     reservation_month = reservation_date_obj.month
     if reservation_month < 10 and reservation_month > 4:
@@ -54,8 +55,8 @@ def create_working_intervals(settings, reservation_date):
     return intervals
 
 
-def define_working_hours(settings, reservation_date):
-    new_intervals = create_working_intervals(settings, reservation_date)
+def define_working_hours(reservation_date):
+    new_intervals = create_working_intervals(reservation_date)
     new_resevations = Calendar(date=datetime.strptime(reservation_date, '%Y-%m-%d').date(), intervals=json.dumps(new_intervals))
     return new_resevations
 

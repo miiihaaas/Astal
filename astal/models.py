@@ -72,6 +72,7 @@ class Settings(db.Model):
     summer_reservation_end_time = db.Column(db.String(5), nullable=False) #! "20:30"
     winter_reservation_start_time = db.Column(db.String(5), nullable=False) #! "00:00"
     winter_reservation_end_time = db.Column(db.String(5), nullable=False) #! "20:30"
+    restaurant_name = db.Column(db.String(100), nullable=False)
 
     
 
