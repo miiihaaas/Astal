@@ -22,10 +22,11 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/astal.css') }}">
 
         {% if title %}
-            <title>Astal - {{ title }}</title>
+            <title>{{ title }}</title>
         {% else %}
-            <title>Astal</title>
+            <title>Rezervacije</title>
         {% endif %}
+        </style>
     </head>
     <body>
         <div id="ball"></div>
@@ -33,6 +34,12 @@
         <header class="container logedin">
             <div class="logo">
                 <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
+                <a href="https://www.example.com">
+                    <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
+                </a>                
+                <a href="{{ settings.site_link }}">
+                    link ka sajtu
+                </a>                
             </div>
             <nav class="navbar navbar-expand-lg navbar-light">
                 <div class="container-fluid">

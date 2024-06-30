@@ -295,49 +295,48 @@ def send_email(user, new_reservation):
     subject = f'Potvrda rezervacije ({new_reservation.reservation_number}) u restoranu {settings.restaurant_name}'
     recipients = [user.email]
     cc = [] #! staviti mejl administratora
-    body = f'Rezervacij {new_reservation.reservation_number} je uspesno kreirana na ime {user.name}. Uplaćena vredost od {new_reservation.amount} eura će biti umanjena od vrednosti računa.'
-    body = f'''Poštovani,
+#     body = f'''Poštovani,
 
-Hvala vam što ste rezervisali sto u restoranu Ćatovića mlini. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: {new_reservation.reservation_number}.
+# Hvala vam što ste rezervisali sto u restoranu Ćatovića mlini. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: {new_reservation.reservation_number}.
 
-Detalji rezervacije:
+# Detalji rezervacije:
 
-Datum i vreme: {new_reservation.reservation_date} {new_reservation.start_time}
-Ime gosta: {user.name}'''
+# Datum i vreme: {new_reservation.reservation_date} {new_reservation.start_time}
+# Ime gosta: {user.name}'''
+
+#     if new_reservation.amount > 0:
+#         body += f'''
+# Uplaćena vrednost od {new_reservation.amount} eura će biti umanjena od vrednosti računa prilikom vaše posete.'''
+
+#     body += '''
+# Srdačan pozdrav,
+# Restoran Ćatovića mlini'''
+
+#! html ready
+#! html ready
+    body = f'''
+    <html>
+    <body>
+    <p>Poštovani {user.name},</p>
+
+    <p>Hvala vam što ste rezervisali sto u restoranu <strong>Ćatovića mlini</strong>. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: <strong>{new_reservation.reservation_number}</strong>.</p>
+
+    <h3>Detalji rezervacije:</h3>
+    <ul>
+        <li><strong>Datum i vreme:</strong> {new_reservation.reservation_date} {new_reservation.start_time}</li>
+        <li><strong>Ime gosta:</strong> {user.name}</li>
+    </ul>'''
 
     if new_reservation.amount > 0:
         body += f'''
-Uplaćena vrednost od {new_reservation.amount} eura će biti umanjena od vrednosti računa prilikom vaše posete.'''
+    <p>Uplaćena vrednost od <strong>{new_reservation.amount} eura</strong> će biti umanjena od vrednosti računa prilikom vaše posete.</p>'''
 
     body += '''
-Srdačan pozdrav,
-Restoran Ćatovića mlini'''
-
-#! html ready
-#! html ready
-    # body = f'''
-    # <html>
-    # <body>
-    # <p>Poštovani {user.name},</p>
-
-    # <p>Hvala vam što ste rezervisali sto u restoranu <strong>Ćatovića mlini</strong>. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: <strong>{new_reservation.reservation_number}</strong>.</p>
-
-    # <h3>Detalji rezervacije:</h3>
-    # <ul>
-    #     <li><strong>Datum i vreme:</strong> {new_reservation.reservation_date} {new_reservation.start_time}</li>
-    #     <li><strong>Ime gosta:</strong> {user.name}</li>
-    # </ul>'''
-
-    # if new_reservation.amount > 0:
-    #     body += f'''
-    # <p>Uplaćena vrednost od <strong>{new_reservation.amount} eura</strong> će biti umanjena od vrednosti računa prilikom vaše posete.</p>'''
-
-    # body += '''
-    # <p>Srdačan pozdrav,</p>
-    # <p><strong>Restoran Ćatovića mlini</strong></p>
-    # </body>
-    # </html>
-    # '''
+    <p>Srdačan pozdrav,</p>
+    <p><strong>Restoran Ćatovića mlini</strong></p>
+    </body>
+    </html>
+    '''
 #! html ready
 #! html ready
 

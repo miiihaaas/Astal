@@ -13,6 +13,7 @@ admin = Blueprint('admin', __name__)
 
 @admin.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
+    settings = Settings.query.first()
     print(f'current user: {current_user}')
     if current_user.is_authenticated:
         flash('Vec ste prijavljeni', 'info')
@@ -30,7 +31,11 @@ def admin_login():
             return redirect(next_page) if next_page else redirect(url_for('admin.reservations'))
         else:
             flash(f'Email ili lozinka nisu odgovarajući.', 'danger')
-    return render_template('login.html', title='Prijavljivanje', form=form, legend='Prijavljivanje')
+    return render_template('login.html', 
+                            title=f'{settings.restaurant_name} - Prijavljivanje', 
+                            form=form, 
+                            legend='Prijavljivanje', 
+                            settings=settings)
 
 
 @admin.route("/logout")
@@ -40,6 +45,7 @@ def logout():
 
 @admin.route('/reservations', methods=['GET', 'POST'])
 def reservations():
+    settings = Settings.query.first()
     if current_user.is_anonymous:
         flash('Nemate autorizaciju da pristupite ovoj stranici.', 'danger')
         return redirect(url_for('main.home'))
@@ -62,7 +68,12 @@ def reservations():
         show_column = True
     
     reservations = Reservation.query.filter_by(reservation_date=selected_date).all()
-    return render_template('reservations.html', reservations=reservations, selected_date=selected_date, show_column=show_column)
+    return render_template('reservations.html', 
+                            reservations=reservations, 
+                            selected_date=selected_date, 
+                            show_column=show_column,
+                            title=f'{settings.restaurant_name} - Lista rezervacija',
+                            settings=settings)
 
 
 
@@ -139,7 +150,9 @@ def calendar():
     return render_template('calendar.html', 
                             reservations=reservations, 
                             selected_date=selected_date, 
-                            table=table)
+                            table=table,
+                            title=f'{settings.restaurant_name} - Dnevnik',
+                            settings=settings)
 
 
 @admin.route('/update_tables', methods=['GET', 'POST'])
@@ -186,65 +199,3 @@ def update_tables():
     #                         selected_date=selected_date,
     #                         table=table)
     return jsonify(success=True)
-
-
-# @admin.route('/calendar', methods=['GET', 'POST'])
-# def calendar():
-#     selected_date = datetime.today().date()
-    
-#     if request.method == 'POST':
-#         if 'reservation_date' in request.form and 'interval' in request.form:
-#             # Logika za ažuriranje broja stolova
-#             selected_date = request.form.get('reservation_date')
-#             interval_to_update = request.form.get('interval')
-#             available_tables = request.form.get('available_tables')
-#             print(f'{selected_date=}, {interval_to_update=}, {available_tables=}')
-            
-#             reservations = Calendar.query.filter_by(date=selected_date).first()
-#             intervals = json.loads(reservations.intervals)
-#             print(f'{intervals=}')
-            
-#             for interval, details in intervals.items():
-#                 if interval == interval_to_update:
-#                     free_tables = int(available_tables) - details['booked_tables']
-#                     details['available_tables'] = available_tables
-#                     details['free_tables'] = free_tables
-#             print(f'{intervals=}')
-            
-#             reservations.intervals = json.dumps(intervals)
-#             db.session.commit()
-#             flash(f'Uspesno ste promenili broj stolova za datum {selected_date} i interval {interval_to_update}', 'success')
-#             return jsonify(success=True)
-        
-#         # Logika za promenu datuma rezervacije
-#         selected_date = request.form.get('reservation_date')
-#         selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
-    
-#     reservations = Reservation.query.filter_by(reservation_date=selected_date).all()
-    
-#     try:
-#         intervals = json.loads(Calendar.query.filter_by(date=selected_date).first().intervals)
-#     except:
-#         intervals = None
-#         print(f'nije kreiran datum {selected_date=}')
-    
-#     if not intervals:
-#         new_reservations = define_working_hours(0, 24, 10, selected_date.strftime('%Y-%m-%d'))
-#         db.session.add(new_reservations)
-#         db.session.commit()
-#         intervals = json.loads(Calendar.query.filter_by(date=selected_date).first().intervals)
-    
-#     table = []
-#     for interval, details in intervals.items():
-#         table.append({
-#             'interval': interval,
-#             'available_tables': details['available_tables'],
-#             'booked_tables': details['booked_tables'],
-#             'free_tables': details['free_tables'],
-#         })
-    
-#     print(f'{table=}')
-#     return render_template('calendar.html', 
-#                             reservations=reservations, 
-#                             selected_date=selected_date, 
-#                             table=table)

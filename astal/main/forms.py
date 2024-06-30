@@ -1,12 +1,12 @@
 import re
 from flask_wtf import FlaskForm
 from wtforms import DateField, IntegerField, SelectField, StringField, TextAreaField, SubmitField, EmailField
-from wtforms.validators import ValidationError
+from wtforms.validators import ValidationError, DataRequired, NumberRange
 
 
 class ReservationForm(FlaskForm):
     reservation_date = DateField('Izaberite datum', validators=[])
-    number_of_people = IntegerField('Broj osoba', validators=[])
+    number_of_people = IntegerField('Broj osoba', validators=[DataRequired(), NumberRange(min=1, max=12)])
     reservation_time = SelectField('Izaberite vreme rezervacije', validators=[], choices=[])
     user_email = EmailField('Mejl', validators=[])
     user_name = StringField('Ime', validators=[])
@@ -35,12 +35,12 @@ class ReservationForm(FlaskForm):
     
     def validate_user_name(form, field):
         if not field.data:
-            raise ValidationError('Unesite svoje Ime.')
+            raise ValidationError('Unesite svoje ime.')
         if len(field.data) < 2:
             raise ValidationError('Ime mora imati najmanje 2 slova.')
 
     def validate_user_surname(form, field):
         if not field.data:
-            raise ValidationError('Unesite svoje Prezime.')
+            raise ValidationError('Unesite svoje prezime.')
         if len(field.data) < 2:
             raise ValidationError('Prezime mora imati najmanje 2 slova.')
