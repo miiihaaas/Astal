@@ -25,11 +25,14 @@ def settings():
         db.session.commit()
         flash('Uspešno ste izmenili podešavanja.', 'success')
         return redirect(url_for('main.settings'))
-    return render_template('settings.html', settings=settings)
+    return render_template('settings.html', 
+                            settings=settings, 
+                            title=f'{settings.restaurant_name} - Podešavanja')
 
 
 @main.route('/', methods=['GET', 'POST'])
 def home():
+    settings = Settings.query.first()
     form = ReservationForm()
     min_date, max_date = define_min_and_max_dates()
     print(f'{min_date=}')
@@ -62,6 +65,9 @@ def home():
             4. ažuriraj kalendar na dati datum
             '''
             if not form.validate():
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        flash(f'**** {error}', 'danger')
                 print(f' **** forma Nije validna')
                 reservations = get_or_create_reservations(form)
                 table_options = calculate_required_tables(number_of_people)
@@ -75,7 +81,9 @@ def home():
                                         max_date=max_date, 
                                         number_of_people=number_of_people, 
                                         reservation_date=reservation_date,
-                                        interval_options=interval_options)
+                                        interval_options=interval_options,
+                                        title=f'{settings.restaurant_name} - Rezervacija',
+                                        settings=settings)
             if is_valid_user_input(form):
                 user = add_user_to_db(form)
             else:
@@ -114,7 +122,9 @@ def home():
                                     reservation_date=reservation_date, #!
                                     reservation_time=new_reservation.start_time,
                                     number_of_people=number_of_people,
-                                    note=new_reservation.note)
+                                    note=new_reservation.note,
+                                    title=f'{settings.restaurant_name} - Rezervacije',
+                                    settings=settings)
         elif submit_type == 'input_change':
             print('izmena datuma ili broja osoba')
             # reservation_date=datetime.strptime(reservation_date, '%Y-%m-%d').date()
@@ -130,7 +140,9 @@ def home():
                                 max_date=max_date,
                                 reservation_date=reservation_date,
                                 number_of_people=number_of_people,
-                                interval_options=interval_options)
+                                interval_options=interval_options,
+                                title=f'{settings.restaurant_name} - Rezervacije',
+                                settings=settings)
 
     elif request.method == 'GET':
         form.reservation_date.data = min_date
@@ -147,4 +159,6 @@ def home():
                             max_date=max_date,
                             # reservation_date=form.reservation_date.data,
                             number_of_people=number_of_people,
-                            interval_options=interval_options)
+                            interval_options=interval_options,
+                            title=f'{settings.restaurant_name} - Rezervacije',
+                            settings=settings)
