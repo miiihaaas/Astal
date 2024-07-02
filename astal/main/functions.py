@@ -133,34 +133,34 @@ def is_valid_user_input(form):
     user_inputs = [user_email, user_name, user_surname, user_phone]
     valid_input = True
     if not user_inputs[0]:
-        flash('Unesite email', 'danger')
+        # flash('Unesite email', 'danger')
         valid_input = False
     if not re.match(r"^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{2,}$", user_inputs[0]):
-        flash('Email nije validan', 'danger')
+        # flash('Email nije validan', 'danger')
         valid_input = False
     
     if not user_inputs[1]:
-        flash('Unesite svoje Ime', 'danger')
+        # flash('Unesite svoje Ime', 'danger')
         valid_input = False
     if len(user_inputs[1]) < 2:
-        flash('Ime mora imati najmanje 2 slova', 'danger')
+        # flash('Ime mora imati najmanje 2 slova', 'danger')
         valid_input = False
 
     if not user_inputs[2]:
-        flash('Unesite svoje Prezime', 'danger')
+        # flash('Unesite svoje Prezime', 'danger')
         valid_input = False
     if len(user_inputs[2]) < 3:
-        flash('Prezime mora imati najmanje 3 slova', 'danger')
+        # flash('Prezime mora imati najmanje 3 slova', 'danger')
         valid_input = False
 
     if not user_inputs[3]:
-        flash('Unesite broj telefona', 'danger')
+        # flash('Unesite broj telefona', 'danger')
         valid_input = False
     if user_inputs[3] and not user_inputs[3].isdigit():
-        flash('Broj telefona treba da se sastoji samo od cifara', 'danger')
+        # flash('Broj telefona treba da se sastoji samo od cifara', 'danger')
         valid_input = False
     if len(user_inputs[3]) < 9 or len(user_inputs[3]) > 13:
-        flash('Broj telefona mora imati izmedju 9 i 13 cifara', 'danger')
+        # flash('Broj telefona mora imati izmedju 9 i 13 cifara', 'danger')
         valid_input = False
     return valid_input
 

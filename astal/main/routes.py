@@ -65,9 +65,9 @@ def home():
             4. ažuriraj kalendar na dati datum
             '''
             if not form.validate():
-                for field, errors in form.errors.items():
-                    for error in errors:
-                        flash(f'**** {error}', 'danger')
+                # for field, errors in form.errors.items():
+                #     for error in errors:
+                #         flash(f'**** {error}', 'danger')
                 print(f' **** forma Nije validna')
                 reservations = get_or_create_reservations(form)
                 table_options = calculate_required_tables(number_of_people)
@@ -116,7 +116,7 @@ def home():
             except Exception as e:
                 db.session.rollback()
                 print(f'Error during commit: {e}')
-            flash(f'Uspešno ste napravili rezervaciju. Informacije o rezervaciji će stići na vašu email adresu.', 'success')
+            flash(f'Uspešno ste napravili rezervaciju. Informacije o rezervaciji će stići na Vašu email adresu.', 'success')
             return render_template('conformation_page.html', 
                                     reservation_number=new_reservation.reservation_number,
                                     reservation_date=reservation_date, #!
