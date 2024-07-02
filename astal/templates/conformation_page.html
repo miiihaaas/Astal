@@ -1,25 +1,22 @@
 {% extends 'layout.html' %}
 {% block content %}
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Broj rezervacije</th>
-            <th>Datum</th>
-            <th>Vreme</th>
-            <th>Broj osoba</th>
-            <th>Napomena</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>{{ reservation_number }}</td>
-            <td>{{ reservation_date }}</td>
-            <td>{{ reservation_time }}</td>
-            <td>{{ number_of_people }}</td>
-            <td>{{ note }}</td>
-        </tr>
-    </tbody>
-</table>
+<dl class="row">
+    <dt class="col-sm-3">Broj rezervacije</dt>
+    <dd class="col-sm-9">{{ reservation_number }}</dd>
+
+    <dt class="col-sm-3">Datum</dt>
+    <dd class="col-sm-9">{{ reservation_date }}</dd>
+
+    <dt class="col-sm-3">Vreme</dt>
+    <dd class="col-sm-9">{{ reservation_time }}</dd>
+
+    <dt class="col-sm-3">Broj osoba</dt>
+    <dd class="col-sm-9">{{ number_of_people }}</dd>
+
+    <dt class="col-sm-3">Napomena</dt>
+    <dd class="col-sm-9">{{ note }}</dd>
+</dl>
 <a href="https://www.catovica-mlini.com/" class="btn btn-primary">Početna</a>
 <a href="{{ url_for('main.home') }}" class="btn btn-primary">Rezervacija</a>
+
 {% endblock content %}

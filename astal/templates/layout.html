@@ -26,7 +26,7 @@
         {% else %}
             <title>Rezervacije</title>
         {% endif %}
-        </style>
+        <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='Favicon.jpg') }}">
     </head>
     <body>
         <div id="ball"></div>
@@ -34,12 +34,12 @@
         <header class="container logedin">
             <div class="logo">
                 <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
-                <a href="https://www.example.com">
+                <!-- <a href="{{ settings.site_link | safe }}">
                     <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
                 </a>                
                 <a href="{{ settings.site_link }}">
                     link ka sajtu
-                </a>                
+                </a>                 -->
             </div>
             <nav class="navbar navbar-expand-lg navbar-light">
                 <div class="container-fluid">
