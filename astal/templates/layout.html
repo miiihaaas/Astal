@@ -33,11 +33,12 @@
         {% if current_user.is_authenticated %}
         <header class="container logedin">
             <div class="logo">
-                <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
-                <!-- <a href="{{ settings.site_link | safe }}">
+                <!-- <a href="google.com"><img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo"></a> -->
+                
+                <a href="{{ settings.site_link | safe }}"> 
                     <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
-                </a>                
-                <a href="{{ settings.site_link }}">
+                </a>
+                <!-- <a href="{{ settings.site_link }}">
                     link ka sajtu
                 </a>                 -->
             </div>
@@ -74,7 +75,10 @@
         {% else %}
         <header class="container">
             <div class="logo">
-                <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
+                <!-- <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo"> -->
+                <a href="{{ settings.site_link | safe }}"> 
+                    <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
+                </a>
             </div>
         </header>
         {% endif %}

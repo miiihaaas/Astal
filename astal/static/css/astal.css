@@ -5,8 +5,8 @@ body.reservations #ball, body.settings #ball, body.calendar #ball { display: non
 .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl { max-width: 1500px; }
 header.container { margin-bottom: 50px; }
 header.container.logedin { display: flex; justify-content: space-between; min-height: 120px; }
-header.container.logedin .logo { display: flex; }
-.logo { max-width: 180px; }
+/* header.container.logedin .logo { display: flex; } ovo sam morao da zakomentrišem jer nije pokazivao logo kada se doda link na sliku */
+.logo { max-width: 180px; z-index: 1000; width: 180px; height: 180px;}
 .navbar-light .navbar-brand:focus, .navbar-light .navbar-brand:hover { color: #0bbbef }
 h1 { text-align: center; }
 .cormorant { font-family: 'Cormorant Garamond', serif; }
