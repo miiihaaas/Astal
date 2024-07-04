@@ -1,6 +1,17 @@
 {% extends 'layout.html' %}
 {% block content %}
+<ul><li class="wpml-ls-slot-shortcode_actions wpml-ls-item wpml-ls-item-sr wpml-ls-current-language wpml-ls-first-item wpml-ls-item-legacy-list-horizontal">
+    <a href="{{ url_for('main.home', language='mn' )}}" class="wpml-ls-link">
+        <span class="wpml-ls-native">MNE</span></a>
+</li><li class="wpml-ls-slot-shortcode_actions wpml-ls-item wpml-ls-item-en wpml-ls-last-item wpml-ls-item-legacy-list-horizontal">
+    <a href="{{url_for('main.home', language='en')}}" class="wpml-ls-link">
+        <span class="wpml-ls-native" lang="en">ENG</span></a>
+</li></ul>
+{% if language == 'en' %}
+<h1 class="astal-heading">RESERVATION</h1>
+{% else %}
 <h1 class="astal-heading">REZERVACIJA</h1>
+{% endif %}
 <form action="" method="POST">
     {{ form.hidden_tag() }}
     <div class="form-group mb-4">

@@ -4,7 +4,7 @@ from flask import Blueprint, json, jsonify, redirect, render_template, flash, re
 from flask_login import current_user
 from astal import db
 from astal.admin.functions import create_working_intervals, define_working_hours
-from astal.main.forms import ReservationForm
+from astal.main.forms import ReservationFormEnglish, ReservationFormSerbian
 from astal.models import Settings, User, Reservation, Calendar
 from astal.main.functions import book_tables, check_availability, calculate_required_tables, create_reservation, get_interval_options, get_or_create_reservations, is_valid_user_input, add_user_to_db, define_min_and_max_dates, schedule_emal, send_email, test
 
@@ -30,10 +30,15 @@ def settings():
                             title=f'{settings.restaurant_name} - Podešavanja')
 
 
-@main.route('/', methods=['GET', 'POST'])
-def home():
+@main.route('/<string:language>', methods=['GET', 'POST'])
+def home(language):
     settings = Settings.query.first()
-    form = ReservationForm()
+    if language == 'mn':
+        form = ReservationFormSerbian()
+    elif language == 'en':
+        form = ReservationFormEnglish()
+    else:
+        return redirect(url_for('main.home', language='mn'))
     min_date, max_date = define_min_and_max_dates()
     print(f'{min_date=}')
     if not request.method == 'GET':
@@ -41,7 +46,7 @@ def home():
         reservations = get_or_create_reservations(form)
         table_options = calculate_required_tables(number_of_people)
         intervals = json.loads(reservations.intervals)
-        interval_options = get_interval_options(intervals, min_date, form.reservation_date.data, table_options, check_availability)
+        interval_options = get_interval_options(intervals, min_date, form.reservation_date.data, table_options, check_availability, language)
         form.reservation_time.choices = interval_options
     if request.method == 'POST':
     # if form.validate_on_submit():
@@ -87,11 +92,11 @@ def home():
             if is_valid_user_input(form):
                 user = add_user_to_db(form)
             else:
-                return redirect(url_for('main.home'))
+                return redirect(url_for('main.home', language=language))
                 # return "napravi funkcionalnost da se vrati na istu formu da se zadrže sva uneta polja"
             new_reservation = create_reservation(form, user)
             
-            send_email(user, new_reservation)
+            send_email(user, new_reservation, language)
             print(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')
             #!
             # reservation_datetime = datetime.combine(
@@ -116,7 +121,10 @@ def home():
             except Exception as e:
                 db.session.rollback()
                 print(f'Error during commit: {e}')
-            flash(f'Uspešno ste napravili rezervaciju. Informacije o rezervaciji će stići na Vašu email adresu.', 'success')
+            if language == 'mn':
+                flash(f'Uspešno ste napravili rezervaciju. Informacije o rezervaciji će stići na Vašu email adresu.', 'success')
+            else:
+                flash(f'You have successfully made a reservation. The reservation information will be sent to your email address.', 'success')
             return render_template('conformation_page.html', 
                                     reservation_number=new_reservation.reservation_number,
                                     reservation_date=reservation_date, #!
@@ -124,7 +132,8 @@ def home():
                                     number_of_people=number_of_people,
                                     note=new_reservation.note,
                                     title=f'{settings.restaurant_name} - Rezervacije',
-                                    settings=settings)
+                                    settings=settings,
+                                    language=language)
         elif submit_type == 'input_change':
             print('izmena datuma ili broja osoba')
             # reservation_date=datetime.strptime(reservation_date, '%Y-%m-%d').date()
@@ -132,7 +141,7 @@ def home():
             reservations = get_or_create_reservations(form)
             table_options = calculate_required_tables(number_of_people)
             intervals = json.loads(reservations.intervals)
-            interval_options = get_interval_options(intervals, min_date, reservation_date, table_options, check_availability)
+            interval_options = get_interval_options(intervals, min_date, reservation_date, table_options, check_availability, language)
             form.reservation_time.choices = interval_options
         return render_template('home.html', 
                                 form=form,
@@ -142,7 +151,8 @@ def home():
                                 number_of_people=number_of_people,
                                 interval_options=interval_options,
                                 title=f'{settings.restaurant_name} - Rezervacije',
-                                settings=settings)
+                                settings=settings,
+                                language=language)
 
     elif request.method == 'GET':
         form.reservation_date.data = min_date
@@ -151,7 +161,7 @@ def home():
         reservations = get_or_create_reservations(form)
     table_options = calculate_required_tables(number_of_people)
     intervals = json.loads(reservations.intervals)
-    interval_options = get_interval_options(intervals, min_date, form.reservation_date.data, table_options, check_availability)
+    interval_options = get_interval_options(intervals, min_date, form.reservation_date.data, table_options, check_availability, language)
     form.reservation_time.choices = interval_options
     return render_template('home.html',
                             form=form, 
@@ -161,4 +171,5 @@ def home():
                             number_of_people=number_of_people,
                             interval_options=interval_options,
                             title=f'{settings.restaurant_name} - Rezervacije',
-                            settings=settings)
+                            settings=settings,
+                            language=language)

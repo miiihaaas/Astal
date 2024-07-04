@@ -4,7 +4,50 @@ from wtforms import DateField, IntegerField, SelectField, StringField, TextAreaF
 from wtforms.validators import ValidationError, DataRequired, NumberRange
 
 
-class ReservationForm(FlaskForm):
+class ReservationFormEnglish(FlaskForm):
+    reservation_date = DateField('Select Date', validators=[])
+    number_of_people = IntegerField('Number of People', validators=[DataRequired(), NumberRange(min=1, max=12)])
+    reservation_time = SelectField('Select Reservation Time', validators=[], choices=[])
+    user_email = EmailField('Email', validators=[])
+    user_name = StringField('First Name', validators=[])
+    user_surname = StringField('Last Name', validators=[])
+    user_phone = StringField('Phone Number', validators=[])
+    user_note = TextAreaField('Note')
+    submit = SubmitField('Reserve')
+
+    def validate_number_of_people(form, field):
+        if field.data < 1 or field.data > 12:
+            raise ValidationError('The number of people must be between 1 and 12.')
+
+    def validate_user_email(form, field):
+        if not field.data:
+            raise ValidationError('Please enter your email address.')
+        if not re.match(r'^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{2,}$', field.data):
+            raise ValidationError('Please enter a valid email address.') 
+
+    def validate_user_phone(form, field):
+        if not field.data:
+            raise ValidationError('Please enter your phone number.')
+        if not field.data.isdigit():
+            raise ValidationError('The phone number must contain only digits.')
+        if len(field.data) < 9 or len(field.data) > 13:
+            raise ValidationError('The phone number must be between 9 and 13 digits.')
+
+    def validate_user_name(form, field):
+        if not field.data:
+            raise ValidationError('Please enter your first name.')
+        if len(field.data) < 2:
+            raise ValidationError('The first name must be at least 2 characters long.')
+
+    def validate_user_surname(form, field):
+        if not field.data:
+            raise ValidationError('Please enter your last name.')
+        if len(field.data) < 2:
+            raise ValidationError('The last name must be at least 2 characters long.')
+
+
+
+class ReservationFormSerbian(FlaskForm):
     reservation_date = DateField('Izaberite datum', validators=[])
     number_of_people = IntegerField('Broj osoba', validators=[DataRequired(), NumberRange(min=1, max=12)])
     reservation_time = SelectField('Izaberite vreme rezervacije', validators=[], choices=[])

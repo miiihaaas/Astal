@@ -105,7 +105,7 @@ def check_availability(start_time, intervals, table_options, num_intervals):
 #     return interval_options
 
 
-def get_interval_options(intervals, min_date, reservation_date, table_options, check_availability):
+def get_interval_options(intervals, min_date, reservation_date, table_options, check_availability, language):
     time_now_obj = datetime.now()
     interval_options = []
     
@@ -118,7 +118,10 @@ def get_interval_options(intervals, min_date, reservation_date, table_options, c
             if available_intervals == 12:
                 interval_options.append([interval_kay, interval_kay])
             elif available_intervals > 8:
-                interval_options.append([interval_kay, f'{interval_kay} - dostupno {available_intervals * 15} minuta'])
+                if language == 'en':
+                    interval_options.append([interval_kay, f'{interval_kay} - available {available_intervals * 15} minutes'])
+                else:
+                    interval_options.append([interval_kay, f'{interval_kay} - dostupno {available_intervals * 15} minuta'])
     print(f'main/forms.py debug: {interval_options=}')
     return interval_options
 
@@ -290,60 +293,69 @@ def book_tables(start_time, intervals, reservation_id, user_id, table_options, n
 #! nastavi sa istražvanjem na GPT 
 #! https://chatgpt.com/g/g-cKXjWStaE-python/c/f80b28cc-e589-4fe4-9f95-f0f0cb60d85f
 
-def send_email(user, new_reservation):
+def send_email(user, new_reservation, language):
     settings = Settings.query.first()
-    subject = f'Potvrda rezervacije ({new_reservation.reservation_number}) u restoranu {settings.restaurant_name}'
+    sender = settings.email_noreply
     recipients = [user.email]
-    cc = [] #! staviti mejl administratora
-#     body = f'''Poštovani,
+    bcc = [settings.email_cc] #! staviti mejl administratora
+    if language == 'mn':
+        subject = f'Potvrda rezervacije ({new_reservation.reservation_number}) u restoranu {settings.restaurant_name}'
+        body = f'''
+<html>
+<body>
+<p>Poštovani,</p>
 
-# Hvala vam što ste rezervisali sto u restoranu Ćatovića mlini. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: {new_reservation.reservation_number}.
+<p>Hvala vam što ste rezervisali sto u restoranu <strong>Ćatovića mlini</strong>. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: <strong>{new_reservation.reservation_number}</strong>.</p>
 
-# Detalji rezervacije:
+<h3>Detalji rezervacije:</h3>
+<ul>
+    <li><strong>Datum:</strong> {new_reservation.reservation_date.strftime('%d.%m.%Y.')}</li>
+    <li><strong>Vreme:</strong> {new_reservation.start_time}</li>
+    <li><strong>Ime gosta:</strong> {user.name}</li>
+</ul>'''
 
-# Datum i vreme: {new_reservation.reservation_date} {new_reservation.start_time}
-# Ime gosta: {user.name}'''
+        if new_reservation.amount < 0: #! ispravi ovo u '>0' kad se implementira plaćanje
+            body += f'''
+<p>Uplaćena vrednost od <strong>{new_reservation.amount} eura</strong> će biti umanjena od vrednosti računa prilikom vaše posete.</p>'''
 
-#     if new_reservation.amount > 0:
-#         body += f'''
-# Uplaćena vrednost od {new_reservation.amount} eura će biti umanjena od vrednosti računa prilikom vaše posete.'''
+        body += '''
+<p>Srdačan pozdrav,</p>
+<p><strong>Restoran Ćatovića mlini</strong></p>
+</body>
+</html>
+'''
+    elif language == 'en':
+        subject = f'Reservation confirmation ({new_reservation.reservation_number}) at {settings.restaurant_name}'
+        body = f'''
+<html>
+<body>
+<p>Dear {user.name},</p>
 
-#     body += '''
-# Srdačan pozdrav,
-# Restoran Ćatovića mlini'''
+<p>Thank you for booking a table at <strong>Ćatovića mlini</strong>. Here are the details of your reservation: <strong>{new_reservation.reservation_number}</strong>.</p>
 
-#! html ready
-#! html ready
-    body = f'''
-    <html>
-    <body>
-    <p>Poštovani {user.name},</p>
+<h3>Reservation details:</h3>
+<ul>
+    <li><strong>Date:</strong> {new_reservation.reservation_date.strftime('%d.%m.%Y.')}</li>
+    <li><strong>Time:</strong> {new_reservation.start_time}</li>
+    <li><strong>Guest name:</strong> {user.name}</li>
+</ul>'''
 
-    <p>Hvala vam što ste rezervisali sto u restoranu <strong>Ćatovića mlini</strong>. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: <strong>{new_reservation.reservation_number}</strong>.</p>
+        if new_reservation.amount < 0: #! ispravi ovo u '>0' kad se implementira plaćanje
+            body += f'''
+<p>The amount of <strong>{new_reservation.amount} euros</strong> that will be deducted from your account at this time.</p>'''
 
-    <h3>Detalji rezervacije:</h3>
-    <ul>
-        <li><strong>Datum i vreme:</strong> {new_reservation.reservation_date} {new_reservation.start_time}</li>
-        <li><strong>Ime gosta:</strong> {user.name}</li>
-    </ul>'''
-
-    if new_reservation.amount > 0:
-        body += f'''
-    <p>Uplaćena vrednost od <strong>{new_reservation.amount} eura</strong> će biti umanjena od vrednosti računa prilikom vaše posete.</p>'''
-
-    body += '''
-    <p>Srdačan pozdrav,</p>
-    <p><strong>Restoran Ćatovića mlini</strong></p>
-    </body>
-    </html>
-    '''
-#! html ready
-#! html ready
+        body += '''
+<p>Regards,</p>
+<p><strong>Restaurant Ćatovića mlini</strong></p>
+</body>
+</html>
+'''
 
 
 
 
-    message = Message(subject, recipients=recipients, cc=cc)
+
+    message = Message(subject, sender=sender, recipients=recipients, bcc=bcc)
     message.html = body
     
     try:
