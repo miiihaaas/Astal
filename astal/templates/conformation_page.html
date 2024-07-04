@@ -17,6 +17,6 @@
     <dd class="col-sm-9">{{ note }}</dd>
 </dl>
 <a href="https://www.catovica-mlini.com/" class="btn btn-primary">Početna</a>
-<a href="{{ url_for('main.home') }}" class="btn btn-primary">Rezervacija</a>
+<a href="{{ url_for('main.home', language=language) }}" class="btn btn-primary">Rezervacija</a>
 
 {% endblock content %}
