@@ -99,7 +99,11 @@
             <div class="row">
                 <div class="col-md-12 text-center mt-4">
                     <input type="hidden" id="submit_type" name="submit_type" value="">
+                    {% if language == 'mn' %}
                     <button class="animated-btn text-white" type="submit" id="reservation_button" name="reservation_button" onclick="document.getElementById('submit_type').value='button'">Rezervišite</button>
+                    {% else %}
+                    <button class="animated-btn text-white" type="submit" id="reservation_button" name="reservation_button" onclick="document.getElementById('submit_type').value='button'">Reserve</button>
+                    {% endif %}
                     {% else %}
                     Nije moguće rezervisati, za više informacija konaktirajte nas na broj...
                     <input type="hidden" id="submit_type" name="submit_type" value="">

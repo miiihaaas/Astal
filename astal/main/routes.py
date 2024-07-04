@@ -77,7 +77,7 @@ def home(language):
                 reservations = get_or_create_reservations(form)
                 table_options = calculate_required_tables(number_of_people)
                 intervals = json.loads(reservations.intervals)
-                interval_options = get_interval_options(intervals, min_date, form.reservation_date.data, table_options, check_availability)
+                interval_options = get_interval_options(intervals, min_date, form.reservation_date.data, table_options, check_availability, language)
                 form.reservation_time.choices = interval_options
                 # flash(f'{form.errors}', 'danger')
                 return render_template('home.html', 
