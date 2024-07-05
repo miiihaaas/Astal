@@ -16,7 +16,12 @@
     <dt class="col-sm-3">Napomena</dt>
     <dd class="col-sm-9">{{ note }}</dd>
 </dl>
+{% if language == 'mn' %}
 <a href="https://www.catovica-mlini.com/" class="btn btn-primary">Početna</a>
 <a href="{{ url_for('main.home', language=language) }}" class="btn btn-primary">Rezervacija</a>
+{% else %}
+<a href="https://www.catovica-mlini.com/" class="btn btn-primary">Home</a>
+<a href="{{ url_for('main.home', language=language) }}" class="btn btn-primary">Reservation</a>
+{% endif %}
 
 {% endblock content %}
