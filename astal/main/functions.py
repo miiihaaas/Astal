@@ -312,6 +312,7 @@ def send_email(user, new_reservation, language):
     <li><strong>Datum:</strong> {new_reservation.reservation_date.strftime('%d.%m.%Y.')}</li>
     <li><strong>Vreme:</strong> {new_reservation.start_time}</li>
     <li><strong>Ime gosta:</strong> {user.name}</li>
+    <li><strong>Broj osoba:</strong> {new_reservation.amount}</li>
 </ul>'''
 
         if new_reservation.amount < 0: #! ispravi ovo u '>0' kad se implementira plaćanje
@@ -340,9 +341,10 @@ def send_email(user, new_reservation, language):
     <li><strong>Date:</strong> {new_reservation.reservation_date.strftime('%d.%m.%Y.')}</li>
     <li><strong>Time:</strong> {new_reservation.start_time}</li>
     <li><strong>Guest name:</strong> {user.name}</li>
+    <li><strong>Number of people:</strong> {new_reservation.amount}</li>
 </ul>'''
 
-        if new_reservation.amount > 0: #! correct this to '>0' when payment is implemented
+        if new_reservation.amount < 0: #! correct this to '>0' when payment is implemented
             body += f'''
 <p>Your bill at the restaurant will be reduced by the amount paid for the reservation confirmation of <strong>{new_reservation.amount} €</strong>.</p>'''
 
