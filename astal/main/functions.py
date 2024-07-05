@@ -305,7 +305,7 @@ def send_email(user, new_reservation, language):
 <body>
 <p>Poštovani,</p>
 
-<p>Hvala vam što ste rezervisali sto u restoranu <strong>Ćatovića mlini</strong>. Ovom prilikom potvrđujemo Vašu rezervaciju pod brojem: <strong>{new_reservation.reservation_number}</strong>.</p>
+<p>Ovim putem potvrđujemo Vašu rezervaciju pod brojem: <strong>{new_reservation.reservation_number}</strong>, ostvarenu putem vebsajta <i>{settings.site_link}</i>.</p>
 
 <h3>Detalji rezervacije:</h3>
 <ul>
@@ -316,9 +316,11 @@ def send_email(user, new_reservation, language):
 
         if new_reservation.amount < 0: #! ispravi ovo u '>0' kad se implementira plaćanje
             body += f'''
-<p>Uplaćena vrednost od <strong>{new_reservation.amount} eura</strong> će biti umanjena od vrednosti računa prilikom vaše posete.</p>'''
+<p>Vaš račun u restoranu biće umanjen za plaćeni iznos za potvdu rezervacije od <strong>{new_reservation.amount} €</strong>.</p>'''
 
         body += '''
+<p>Naša lokacija je <a href="https://maps.app.goo.gl/UfsBkDsrFFNgAtdk8">ovdje</a>.</p>
+
 <p>Srdačan pozdrav,</p>
 <p><strong>Restoran Ćatovića mlini</strong></p>
 </body>
@@ -331,7 +333,7 @@ def send_email(user, new_reservation, language):
 <body>
 <p>Dear {user.name},</p>
 
-<p>Thank you for booking a table at <strong>Ćatovića mlini</strong>. Here are the details of your reservation: <strong>{new_reservation.reservation_number}</strong>.</p>
+<p>We hereby confirm your reservation with the number: <strong>{new_reservation.reservation_number}</strong>, made through the website <i>{settings.site_link}</i>.</p>
 
 <h3>Reservation details:</h3>
 <ul>
@@ -340,12 +342,14 @@ def send_email(user, new_reservation, language):
     <li><strong>Guest name:</strong> {user.name}</li>
 </ul>'''
 
-        if new_reservation.amount < 0: #! ispravi ovo u '>0' kad se implementira plaćanje
+        if new_reservation.amount > 0: #! correct this to '>0' when payment is implemented
             body += f'''
-<p>The amount of <strong>{new_reservation.amount} euros</strong> that will be deducted from your account at this time.</p>'''
+<p>Your bill at the restaurant will be reduced by the amount paid for the reservation confirmation of <strong>{new_reservation.amount} €</strong>.</p>'''
 
         body += '''
-<p>Regards,</p>
+        <p>Our location is <a href="https://maps.app.goo.gl/UfsBkDsrFFNgAtdk8">here</a>.</p>
+
+<p>Best regards,</p>
 <p><strong>Restaurant Ćatovića mlini</strong></p>
 </body>
 </html>

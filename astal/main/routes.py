@@ -30,6 +30,10 @@ def settings():
                             title=f'{settings.restaurant_name} - Podešavanja')
 
 
+@main.route('/')
+def index():
+    return redirect(url_for('main.home', language='mn'))
+
 @main.route('/<string:language>', methods=['GET', 'POST'])
 def home(language):
     settings = Settings.query.first()
