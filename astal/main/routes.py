@@ -88,7 +88,8 @@ def home(language):
                                         reservation_date=reservation_date,
                                         interval_options=interval_options,
                                         title=f'{settings.restaurant_name} - Rezervacija',
-                                        settings=settings)
+                                        settings=settings,
+                                        language=language)
             if is_valid_user_input(form):
                 user = add_user_to_db(form)
             else:
