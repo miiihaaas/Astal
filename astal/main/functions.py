@@ -322,6 +322,7 @@ def send_email(user, new_reservation, language):
 
         body += '''
 <p>Naša lokacija je <a href="https://maps.app.goo.gl/UfsBkDsrFFNgAtdk8">ovdje</a>.</p>
+<p>U slučaju izmjena u posljednjem trenutku ili bilo kakvih specifičnih zahtjeva, molim Vas da nas kontaktirate putem telefona +382 68 333 444.</p>
 
 <p>Srdačan pozdrav,</p>
 <p><strong>Restoran Ćatovića mlini</strong></p>
@@ -351,7 +352,8 @@ def send_email(user, new_reservation, language):
 <p>Your bill at the restaurant will be reduced by the amount paid for the reservation confirmation of <strong>{new_reservation.amount} €</strong>.</p>'''
 
         body += '''
-        <p>Our location is <a href="https://maps.app.goo.gl/UfsBkDsrFFNgAtdk8">here</a>.</p>
+<p>Our location is <a href="https://maps.app.goo.gl/UfsBkDsrFFNgAtdk8">here</a>.</p>
+<p>In case of any last minute changes or specific requests, please contat us on WatsApp  +382 68 333 444</p>
 
 <p>Best regards,</p>
 <p><strong>Restaurant Ćatovića mlini</strong></p>
