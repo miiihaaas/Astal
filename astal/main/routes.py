@@ -100,6 +100,13 @@ def home(language):
                 return redirect(url_for('main.home', language=language))
                 # return "napravi funkcionalnost da se vrati na istu formu da se zadrže sva uneta polja"
             new_reservation = create_reservation(form, user)
+            print(f'*** {new_reservation=}')
+            if new_reservation == 'duplikat':
+                if language == 'mn':
+                    flash('Već ste rezervisali sto za ovaj dan. Ukoliko imate dodatna potanja, molmio Vas kontaktirajte nas.', 'info')
+                elif language == 'en':
+                    flash('You have already reserved a table for this day. If you have additional needs, please contact us.', 'info')
+                return redirect(url_for('main.home', language=language))
             
             send_email(user, new_reservation, language)
             print(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')

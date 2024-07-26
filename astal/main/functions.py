@@ -219,6 +219,8 @@ def create_reservation(form, user):
                                     end_time=reservation_end_time,
                                     note=note,
                                     user_id=user.id)
+    if new_reservation.user_id in [reservation.user_id for reservation in reservations]:
+        return 'duplikat'
     db.session.add(new_reservation)
     db.session.commit()
     return new_reservation
