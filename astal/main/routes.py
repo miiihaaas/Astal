@@ -50,6 +50,7 @@ def home(language):
         form = ReservationFormEnglish()
     else:
         return redirect(url_for('main.home', language='mn'))
+    return redirect(url_for('main.under_construction'))
     min_date, max_date = define_min_and_max_dates()
     print(f'{min_date=}')
     if not request.method == 'GET':
