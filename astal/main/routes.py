@@ -34,7 +34,9 @@ def settings():
 
 @main.route('/under_construction')
 def under_construction():
-    return render_template('under_construction.html')
+    settings = Settings.query.first()
+    return render_template('under_construction.html',
+                            settings=settings)
 
 @main.route('/')
 def index():
