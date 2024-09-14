@@ -124,6 +124,7 @@
             var formData = new FormData(form);
 
             fetch(form.action, {
+            // fetch('{{ url_for("main.home", language=language) }}', {
                 method: 'POST',
                 body: formData
             })

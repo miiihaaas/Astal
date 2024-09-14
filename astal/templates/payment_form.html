@@ -1,0 +1,147 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container py-5">
+    {% if language == 'en' %}
+    <h1 class="astal-heading">RESERVATION DETAILS</h1>
+    {% else %}
+    <h1 class="astal-heading">DETALJI REZERVACIJE</h1>
+    {% endif %}
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-group mb-4">
+                <div class="container astal-form">
+                    <!-- <form action="" method="POST"> -->
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row g-4">
+                            <!-- Leva polovina -->
+                            <div class="col-md-6">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form.reservation_date.label(class="form-label cormorant") }}
+                                            {{ form.reservation_date(class="form-control form-control-sm", id="reservation_date", min=min_date, max=max_date, value=form.reservation_date.data, readonly=True) }}
+                                            {% for error in form.reservation_date.errors %}
+                                                <small class="text-danger">{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form.reservation_time.label(class="form-label cormorant") }}
+                                            {{ form.reservation_time(class="form-control form-control-sm", id="reservation_time", readonly=True) }}
+                                            {% for error in form.reservation_time.errors %}
+                                                <small class="text-danger">{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form.number_of_people.label(class="form-label cormorant") }}
+                                            {{ form.number_of_people(class="form-control form-control-sm", id="number_of_people", type="number", value=form.number_of_people.data, readonly=True) }}
+                                            {% for error in form.number_of_people.errors %}
+                                                <small class="text-danger">{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form.amount.label(class="form-label cormorant") }}
+                                            {{ form.amount(class="form-control form-control-sm", id="amount", readonly=True) }}
+                                            {% for error in form.amount.errors %}
+                                                <small class="text-danger">{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Desna polovina -->
+                            <div class="col-md-6">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form.user_name.label(class="form-label cormorant") }}
+                                            {{ form.user_name(class="form-control form-control-sm", id="user_name", readonly=True) }}
+                                            {% for error in form.user_name.errors %}
+                                                <small class="text-danger">{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form.user_surname.label(class="form-label cormorant") }}
+                                            {{ form.user_surname(class="form-control form-control-sm", id="user_surname", readonly=True) }}
+                                            {% for error in form.user_surname.errors %}
+                                                <small class="text-danger">{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form.user_email.label(class="form-label cormorant") }}
+                                            {{ form.user_email(class="form-control form-control-sm", id="user_email", readonly=True) }}
+                                            {% for error in form.user_email.errors %}
+                                                <small class="text-danger">{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form.user_phone.label(class="form-label cormorant") }}
+                                            {{ form.user_phone(class="form-control form-control-sm", id="user_phone", readonly=True) }}
+                                            {% for error in form.user_phone.errors %}
+                                                <small class="text-danger">{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Napomena -->
+                            <div class="col-12 mt-4">
+                                <div class="form-group">
+                                    {{ form.user_note.label(class="form-label cormorant") }}
+                                    {{ form.user_note(class="form-control form-control-sm", id="user_note", readonly=True) }}
+                                    {% for error in form.user_note.errors %}
+                                        <small class="text-danger">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    <!-- </form> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form name="pay" action="https://formtest.wspay.biz/authorization.aspx" method="POST">
+        <input type="hidden" name="ShopID" value="{{wspay_data['ShopID']}}">
+        <input type="hidden" name="ShoppingCartID" value="{{wspay_data['ShoppingCartID']}}">
+        <input type="hidden" name="Version" value="2.0">
+        <input type="hidden" name="TotalAmount" value="{{wspay_data['TotalAmount']}}">
+        <input type="hidden" name="Signature" value="{{wspay_data['Signature']}}">
+        <input type="hidden" name="ReturnURL" value="https://www.rozee.pk/blog/wp-content/uploads/2019/05/Quotes-and-their-Meanings-to-Inspire-You-to-Succeed-1068x607.png">
+        <input type="hidden" name="CancelURL" value="https://www.stamplab.com.au/cdn/shop/files/02-1024-cancelled-stamp.png?v=1682978167&width=3508">
+        <input type="hidden" name="ReturnErrorURL" value="https://thumbs.dreamstime.com/b/error-rubber-stamp-word-error-inside-illustration-109026446.jpg">
+        <div class="col-md-12 text-center mt-4">
+            {% if language == 'mn' %}
+            <input class="animated-btn text-white" type="submit" value="Plati">
+            <!-- <button class="animated-btn text-white" type="submit" id="pay_reservation_button" name="pay_reservation_button">Plati</button> -->
+            {% else %}
+            <input class="animated-btn text-white" type="submit" value="Pay">
+            <!-- <button class="animated-btn text-white" type="submit" id="pay_reservation_button" name="pay_reservation_button">Pay</button> -->
+            {% endif %}
+        </div>
+    </form>
+    <div class="col-md-12 text-center mt-4">
+        {% if language == 'mn' %}
+        <a class="" href="{{url_for('main.conformation_local', language=language, reservation_id=wspay_data['ShoppingCartID'])}}">lokal-plati</a>
+        {% else %}
+        <a class="" href="{{url_for('main.conformation_local', language=language, reservation_id=wspay_data['ShoppingCartID'])}}">local-pay</a>
+        {% endif %}
+    </div>
+
+
+</div>
+{% endblock content %}
