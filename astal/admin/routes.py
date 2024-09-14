@@ -66,8 +66,18 @@ def reservations():
         show_column = False
     else:
         show_column = True
-    
+        
+    #############################################################################################################################
+    #############################################################################################################################
+    #############################################################################################################################
     reservations = Reservation.query.filter_by(reservation_date=selected_date).all()
+    #TODO KADA VREMENOM PROĐE DATUM ZA SVE REZERVACIJE KOJE NISU PLAĆENE AKTIVIRATI KOD ISPOD A KOD IZNAD ZAKOMENTARISATI --- 18/10/2024
+    #! all_reservations = Reservation.query.filter_by(reservation_date=selected_date).all()
+    #! reservations = [reservation for reservation in all_reservations if reservation.status != 'unpaid']
+    #############################################################################################################################
+    #############################################################################################################################
+    #############################################################################################################################
+    
     return render_template('reservations.html', 
                             reservations=reservations, 
                             selected_date=selected_date, 

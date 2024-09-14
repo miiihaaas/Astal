@@ -87,3 +87,27 @@ class ReservationFormSerbian(FlaskForm):
             raise ValidationError('Unesite svoje prezime.')
         if len(field.data) < 2:
             raise ValidationError('Prezime mora imati najmanje 2 slova.')
+
+
+class PaymentFormSerbian(FlaskForm):
+    reservation_date = DateField('Datum rezervacije', validators=[])
+    number_of_people = IntegerField('Broj osoba', validators=[DataRequired(), NumberRange(min=1, max=12)])
+    amount = StringField('Cena rezervacije', validators=[])
+    reservation_time = StringField('Vreme rezervacije', validators=[])
+    user_email = EmailField('Mejl', validators=[])
+    user_name = StringField('Ime', validators=[])
+    user_surname = StringField('Prezime', validators=[])
+    user_phone = StringField('Broj telefona', validators=[])
+    user_note = TextAreaField('Napomena')
+
+
+class PaymentFormEnglish(FlaskForm):
+    reservation_date = DateField('Reservation date', validators=[])
+    number_of_people = IntegerField('Number of people', validators=[DataRequired(), NumberRange(min=1, max=12)])
+    amount = StringField('Reservation cost', validators=[])
+    reservation_time = StringField('Reservation time', validators=[])
+    user_email = EmailField('Email', validators=[])
+    user_name = StringField('Name', validators=[])
+    user_surname = StringField('Surname', validators=[])
+    user_phone = StringField('Phone number', validators=[])
+    user_note = TextAreaField('Note')

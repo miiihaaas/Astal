@@ -36,7 +36,13 @@
             <td>{{ reservation.user.surname }}</td>
             <td>{{ reservation.reservation_number }}</td>
             <td>{{ reservation.number_of_people }}</td>
-            <td>{{ reservation.amount }}</td>
+            <td>
+                {% if reservation.status == 'unpaid' %}
+                0.00
+                {% else %}
+                {{ reservation.amount }}
+                {% endif %}
+            </td>
             <td>{{ reservation.user.email }}</td>
             <td>{{ reservation.user.phone }}</td>
             <td>{{ reservation.note }}</td>

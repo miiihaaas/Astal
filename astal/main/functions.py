@@ -236,6 +236,16 @@ def get_or_create_reservations(form):
     return reservations
 
 
+def get_or_create_reservations_(new_reservation):
+    reservations = Calendar.query.filter_by(date=new_reservation.reservation_date).first()
+    if not reservations:
+        new_reservations = define_working_hours(new_reservation.reservation_date.strftime('%Y-%m-%d'))
+        db.session.add(new_reservations)
+        db.session.commit()
+        reservations = Calendar.query.filter_by(date=new_reservation.reservation_date).first()
+    return reservations
+
+
 
 def book_tables(start_time, intervals, reservation_id, user_id, table_options, num_intervals):
     for table_option in table_options:
