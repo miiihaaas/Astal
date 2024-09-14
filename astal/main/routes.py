@@ -43,6 +43,7 @@ def index():
 
 @main.route('/<string:language>', methods=['GET', 'POST'])
 def home(language):
+    return redirect(url_for('main.under_construction'))
     settings = Settings.query.first()
     if language == 'mn':
         form = ReservationFormSerbian()
