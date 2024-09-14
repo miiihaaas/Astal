@@ -32,9 +32,14 @@ def settings():
                             title=f'{settings.restaurant_name} - Podešavanja')
 
 
+@main.route('/under_construction')
+def under_construction():
+    return render_template('under_construction.html')
+
 @main.route('/')
 def index():
-    return redirect(url_for('main.home', language='mn'))
+    return redirect(url_for('main.under_construction'))
+    # return redirect(url_for('main.home', language='mn'))
 
 @main.route('/<string:language>', methods=['GET', 'POST'])
 def home(language):
