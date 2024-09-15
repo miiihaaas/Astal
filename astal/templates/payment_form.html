@@ -126,14 +126,15 @@
         <input type="hidden" name="ReturnErrorURL" value="{{ url_for('main.return_error_url', language=language, _external=True) }}">
         <div class="col-md-12 text-center mt-4">
             {% if language == 'mn' %}
-            <input class="animated-btn text-white" type="submit" value="Plati">
-            <!-- <button class="animated-btn text-white" type="submit" id="pay_reservation_button" name="pay_reservation_button">Plati</button> -->
+            <!-- <input class="animated-btn text-white" type="submit" value="Plati"> -->
+            <button class="animated-btn text-white" type="submit" id="pay_reservation_button" name="pay_reservation_button">Plati</button>
             {% else %}
-            <input class="animated-btn text-white" type="submit" value="Pay">
-            <!-- <button class="animated-btn text-white" type="submit" id="pay_reservation_button" name="pay_reservation_button">Pay</button> -->
+            <!-- <input class="animated-btn text-white" type="submit" value="Pay"> -->
+            <button class="animated-btn text-white" type="submit" id="pay_reservation_button" name="pay_reservation_button">Pay</button>
             {% endif %}
         </div>
     </form>
+    {% if request.url.startswith('http://127.0.0.1:5000/') %}
     <div class="col-md-12 text-center mt-4">
         {% if language == 'mn' %}
         <a class="" href="{{url_for('main.conformation_local', language=language, reservation_id=wspay_data['ShoppingCartID'])}}">lokal-plati</a>
@@ -141,7 +142,7 @@
         <a class="" href="{{url_for('main.conformation_local', language=language, reservation_id=wspay_data['ShoppingCartID'])}}">local-pay</a>
         {% endif %}
     </div>
-
-
+    {% endif %}
+    <a href="http://www.wspay.me" title="Monri WSpay - Web Secure Payment Gateway" target="_blank"><img alt="Monri WSpay - Web Secure Payment Gateway" src="https://www.wspay.info/payment-info/wsPayWebSecureLogo-118x50-transparent.png" border="0"></a>
 </div>
 {% endblock content %}
