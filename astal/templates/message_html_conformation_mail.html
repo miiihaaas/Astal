@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="{{ 'en' if language == 'en' else 'sr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Reservation Confirmation' if language == 'en' else 'Potvrda rezervacije' }}</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #ebebeb;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .content {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        h1, h3 {
+            font-family: 'Cormorant Garamond', serif;
+            color: #0bbbef;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        strong {
+            color: #0bbbef;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #0bbbef;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ 'Reservation Confirmation' if language == 'en' else 'Potvrda rezervacije' }}</h1>
+        
+        <div class="content">
+        {% if language == 'en' %}
+        <p>Dear {{ reservation.user.name }},</p>
+
+        <p>We hereby confirm your reservation with the number: <strong>{{ reservation.reservation_number }}</strong>, made through the website <i>{{ settings.site_link }}</i>.</p>
+
+        <h3>Reservation details:</h3>
+        <ul>
+            <li><strong>Date:</strong> {{ reservation.reservation_date.strftime('%d.%m.%Y.') }}</li>
+            <li><strong>Time:</strong> {{ reservation.start_time }}</li>
+            <li><strong>Guest name:</strong> {{ reservation.user.name }}</li>
+            <li><strong>Number of people:</strong> {{ reservation.number_of_people }}</li>
+            <li><strong>Note:</strong> {{ reservation.note }}</li>
+        </ul>
+
+        {% if reservation.amount > 0 %}
+        <p>Your bill at the restaurant will be reduced by the amount paid for the reservation confirmation of <strong>{{ reservation.amount }} €</strong>.</p>
+        {% endif %}
+
+        <p>Our location is <a href="https://maps.app.goo.gl/UfsBkDsrFFNgAtdk8">here</a>.</p>
+        <p>In case of any last minute changes or specific requests, please contact us on WhatsApp +382 68 333 444</p>
+
+        <p>Best regards,</p>
+        <p><strong>Restaurant Ćatovića mlini</strong></p>
+
+        {% else %}
+        <p>Poštovani,</p>
+
+        <p>Ovim putem potvrđujemo Vašu rezervaciju pod brojem: <strong>{{ reservation.reservation_number }}</strong>, ostvarenu putem vebsajta <i>{{ settings.site_link }}</i>.</p>
+
+        <h3>Detalji rezervacije:</h3>
+        <ul>
+            <li><strong>Datum:</strong> {{ reservation.reservation_date.strftime('%d.%m.%Y.') }}</li>
+            <li><strong>Vreme:</strong> {{ reservation.start_time }}</li>
+            <li><strong>Ime gosta:</strong> {{ reservation.user.name }}</li>
+            <li><strong>Broj osoba:</strong> {{ reservation.number_of_people }}</li>
+            <li><strong>Napomena:</strong> {{ reservation.note }}</li>
+        </ul>
+
+        {% if reservation.amount > 0 %}
+        <p>Vaš račun u restoranu biće umanjen za plaćeni iznos za potvrdu rezervacije od <strong>{{ reservation.amount }} €</strong>.</p>
+        {% endif %}
+
+        <p>Naša lokacija je <a href="https://maps.app.goo.gl/UfsBkDsrFFNgAtdk8">ovdje</a>.</p>
+        <p>U slučaju izmjena u posljednjem trenutku ili bilo kakvih specifičnih zahtjeva, molim Vas da nas kontaktirate putem telefona +382 68 333 444.</p>
+
+        <p>Srdačan pozdrav,</p>
+        <p><strong>Restoran Ćatovića mlini</strong></p>
+        {% endif %}
+        </div>
+
+        <div class="footer">
+            <p>© {{ current_year }} {{ settings.restaurant_name }}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
