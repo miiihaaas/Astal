@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import re
 from time import sleep
 
-from flask import flash, redirect, url_for
+from flask import flash, redirect, render_template, url_for
 from flask_mail import Message
 from astal.admin.functions import define_working_hours
 from astal.models import Reservation, Settings, User, Calendar
@@ -219,7 +219,7 @@ def create_reservation(form, user):
                                     end_time=reservation_end_time,
                                     note=note,
                                     user_id=user.id)
-    if new_reservation.user_id in [reservation.user_id for reservation in reservations]:
+    if new_reservation.user_id in [reservation.user_id for reservation in reservations if reservation.status != 'unpaid']:
         return 'duplikat'
     db.session.add(new_reservation)
     db.session.commit()
@@ -328,7 +328,7 @@ def send_email(user, new_reservation, language):
     <li><strong>Napomena:</strong> {new_reservation.note}</li>
 </ul>'''
 
-        if new_reservation.amount < 0: #! ispravi ovo u '>0' kad se implementira plaćanje
+        if new_reservation.amount > 0: #! ispravi ovo u '>0' kad se implementira plaćanje
             body += f'''
 <p>Vaš račun u restoranu biće umanjen za plaćeni iznos za potvdu rezervacije od <strong>{new_reservation.amount} €</strong>.</p>'''
 
@@ -359,7 +359,7 @@ def send_email(user, new_reservation, language):
     <li><strong>Note:</strong> {new_reservation.note}</li>
 </ul>'''
 
-        if new_reservation.amount < 0: #! correct this to '>0' when payment is implemented
+        if new_reservation.amount > 0: #! correct this to '>0' when payment is implemented
             body += f'''
 <p>Your bill at the restaurant will be reduced by the amount paid for the reservation confirmation of <strong>{new_reservation.amount} €</strong>.</p>'''
 
@@ -378,7 +378,12 @@ def send_email(user, new_reservation, language):
 
 
     message = Message(subject, sender=sender, recipients=recipients, bcc=bcc)
-    message.html = body
+    # message.html = body #! ako radi html dobro, obrisati kod iznad body=''' . . . '''
+    message.html = message.html = render_template('message_html_conformation_mail.html', 
+                                                    current_year=datetime.now().year,
+                                                    reservation=new_reservation, 
+                                                    settings=settings, 
+                                                    language=language)
     
     try:
         mail.send(message)

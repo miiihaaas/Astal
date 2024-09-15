@@ -338,3 +338,21 @@ def conformation_local(language, reservation_id):
                             title=f'{settings.restaurant_name} - Rezervacije',
                             settings=settings,
                             language=language)
+
+
+@main.route('/cancel_url/<string:language>', methods=['GET'])
+def cancel_url(language):
+    if language == 'mn':
+        flash('Rezervacijata je prekinuta.', 'danger')
+    elif language == 'en':
+        flash('The reservation has been canceled.', 'danger')
+    return redirect(url_for('main.home', language=language))
+
+
+@main.route('/return_error_url/<string:language>', methods=['GET'])
+def return_error_url(language):
+    if language == 'mn':
+        flash('Nastala je greška prilikom kreiranja rezervacije.', 'danger')
+    elif language == 'en':
+        flash('An error occurred while creating the reservation.', 'danger')
+    return redirect(url_for('main.home', language=language))
