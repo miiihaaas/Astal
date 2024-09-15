@@ -40,8 +40,8 @@ def under_construction():
 
 @main.route('/')
 def index():
-    return redirect(url_for('main.under_construction'))
-    # return redirect(url_for('main.home', language='mn'))
+    # return redirect(url_for('main.under_construction'))
+    return redirect(url_for('main.home', language='mn'))
 
 @main.route('/<string:language>', methods=['GET', 'POST'])
 def home(language):
@@ -52,7 +52,7 @@ def home(language):
         form = ReservationFormEnglish()
     else:
         return redirect(url_for('main.home', language='mn'))
-    return redirect(url_for('main.under_construction'))
+    # return redirect(url_for('main.under_construction')) #! se menja nešto na sajtu -- uncomment
     min_date, max_date = define_min_and_max_dates()
     print(f'{min_date=}')
     if not request.method == 'GET':
