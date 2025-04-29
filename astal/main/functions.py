@@ -312,78 +312,14 @@ def send_email(user, new_reservation, language):
     bcc = [settings.email_cc] #! staviti mejl administratora
     if language == 'mn':
         subject = f'Potvrda rezervacije ({new_reservation.reservation_number}) u restoranu {settings.restaurant_name}'
-        body = f'''
-<html>
-<body>
-<p>Poštovani,</p>
-
-<p>Ovim putem potvrđujemo Vašu rezervaciju pod brojem: <strong>{new_reservation.reservation_number}</strong>, ostvarenu putem vebsajta <i>{settings.site_link}</i>.</p>
-
-<h3>Detalji rezervacije:</h3>
-<ul>
-    <li><strong>Datum:</strong> {new_reservation.reservation_date.strftime('%d.%m.%Y.')}</li>
-    <li><strong>Vreme:</strong> {new_reservation.start_time}</li>
-    <li><strong>Ime gosta:</strong> {user.name}</li>
-    <li><strong>Broj osoba:</strong> {new_reservation.number_of_people}</li>
-    <li><strong>Napomena:</strong> {new_reservation.note}</li>
-</ul>'''
-
-        if new_reservation.amount > 0: #! ispravi ovo u '>0' kad se implementira plaćanje
-            body += f'''
-<p>Vaš račun u restoranu biće umanjen za plaćeni iznos za potvdu rezervacije od <strong>{new_reservation.amount} €</strong>.</p>'''
-
-        body += '''
-<p>Naša lokacija je <a href="https://maps.app.goo.gl/UfsBkDsrFFNgAtdk8">ovdje</a>.</p>
-<p>U slučaju izmjena u posljednjem trenutku ili bilo kakvih specifičnih zahtjeva, molim Vas da nas kontaktirate putem telefona +382 68 333 444.</p>
-
-<p>Srdačan pozdrav,</p>
-<p><strong>Restoran Ćatovića mlini</strong></p>
-</body>
-</html>
-'''
     elif language == 'en':
         subject = f'Reservation confirmation ({new_reservation.reservation_number}) at {settings.restaurant_name}'
-        body = f'''
-<html>
-<body>
-<p>Dear {user.name},</p>
-
-<p>We hereby confirm your reservation with the number: <strong>{new_reservation.reservation_number}</strong>, made through the website <i>{settings.site_link}</i>.</p>
-
-<h3>Reservation details:</h3>
-<ul>
-    <li><strong>Date:</strong> {new_reservation.reservation_date.strftime('%d.%m.%Y.')}</li>
-    <li><strong>Time:</strong> {new_reservation.start_time}</li>
-    <li><strong>Guest name:</strong> {user.name}</li>
-    <li><strong>Number of people:</strong> {new_reservation.number_of_people}</li>
-    <li><strong>Note:</strong> {new_reservation.note}</li>
-</ul>'''
-
-        if new_reservation.amount > 0: #! correct this to '>0' when payment is implemented
-            body += f'''
-<p>Your bill at the restaurant will be reduced by the amount paid for the reservation confirmation of <strong>{new_reservation.amount} €</strong>.</p>'''
-
-        body += '''
-<p>Our location is <a href="https://maps.app.goo.gl/UfsBkDsrFFNgAtdk8">here</a>.</p>
-<p>In case of any last minute changes or specific requests, please contat us on WatsApp  +382 68 333 444</p>
-
-<p>Best regards,</p>
-<p><strong>Restaurant Ćatovića mlini</strong></p>
-</body>
-</html>
-'''
-
-
-
-
-
     message = Message(subject, sender=sender, recipients=recipients, bcc=bcc)
-    # message.html = body #! ako radi html dobro, obrisati kod iznad body=''' . . . '''
-    message.html = message.html = render_template('message_html_conformation_mail.html', 
-                                                    current_year=datetime.now().year,
-                                                    reservation=new_reservation, 
-                                                    settings=settings, 
-                                                    language=language)
+    message.html = render_template('message_html_conformation_mail.html', 
+                                    current_year=datetime.now().year,
+                                    reservation=new_reservation, 
+                                    settings=settings, 
+                                    language=language)
     
     try:
         mail.send(message)
