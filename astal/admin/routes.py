@@ -209,3 +209,25 @@ def update_tables():
     #                         selected_date=selected_date,
     #                         table=table)
     return jsonify(success=True)
+
+@admin.route('/reset_tables', methods=['POST'])
+def reset_tables():
+    if current_user.is_anonymous:
+        flash('Nemate autorizaciju da pristupite ovoj stranici.', 'danger')
+        return jsonify(success=False), 403
+    data = request.get_json()
+    selected_date = data.get('reservation_date')
+    reservations = Calendar.query.filter_by(date=selected_date).first()
+    if not reservations:
+        flash('Nema rezervacija za izabrani datum.', 'warning')
+        return jsonify(success=False)
+    intervals = json.loads(reservations.intervals)
+    for interval, details in intervals.items():
+        details['available_tables_2'] = 0
+        details['available_tables_4'] = 0
+        details['free_tables_2'] = 0 - details['booked_tables_2']
+        details['free_tables_4'] = 0 - details['booked_tables_4']
+    reservations.intervals = json.dumps(intervals)
+    db.session.commit()
+    flash(f'Svi intervali su postavljeni na nulu za datum {selected_date}.', 'success')
+    return jsonify(success=True)
