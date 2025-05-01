@@ -3,9 +3,12 @@ from datetime import datetime
 from flask_login import current_user, login_user, logout_user
 from flask import Blueprint, flash, json, redirect, render_template, request, jsonify, url_for
 from astal.admin.functions import cancel_reservation, confirm_reservation, define_working_hours, extend_reservation, finish_reservation
-from astal import db, bcrypt
+from astal import db, bcrypt, mail
 from astal.models import Calendar, Reservation, Settings, User
-from astal.admin.forms import LoginForm
+from astal.admin.forms import LoginForm, ResetPasswordRequestForm, ResetPasswordForm
+from itsdangerous import URLSafeTimedSerializer
+from flask_mail import Message
+from flask import current_app
 
 
 admin = Blueprint('admin', __name__)
@@ -231,3 +234,45 @@ def reset_tables():
     db.session.commit()
     flash(f'Svi intervali su postavljeni na nulu za datum {selected_date}.', 'success')
     return jsonify(success=True)
+
+@admin.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    form = ResetPasswordRequestForm()
+    settings = Settings.query.first()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+            token = s.dumps(user.email, salt='reset-password')
+            reset_url = url_for('admin.reset_password', token=token, _external=True)
+            # Slanje email-a
+            msg = Message('Resetovanje lozinke', recipients=[user.email])
+            msg.body = f'Za resetovanje lozinke kliknite na sledeći link: {reset_url}'
+            mail.send(msg)
+            flash('Instrukcije za resetovanje lozinke su poslate na vašu mejl adresu.', 'info')
+            return redirect(url_for('admin.admin_login'))
+        else:
+            flash('Korisnik sa tom mejl adresom ne postoji.', 'danger')
+    return render_template('reset_password_request.html', form=form, settings=settings)
+
+
+@admin.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    form = ResetPasswordForm()
+    settings = Settings.query.first()
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    try:
+        email = s.loads(token, salt='reset-password', max_age=3600)
+    except Exception:
+        flash('Link za resetovanje lozinke je nevažeći ili je istekao.', 'danger')
+        return redirect(url_for('admin.reset_password_request'))
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash('Korisnik nije pronađen.', 'danger')
+        return redirect(url_for('admin.reset_password_request'))
+    if form.validate_on_submit():
+        user.password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        db.session.commit()
+        flash('Lozinka je uspešno promenjena. Možete se prijaviti sa novom lozinkom.', 'success')
+        return redirect(url_for('admin.admin_login'))
+    return render_template('reset_password.html', form=form, token=token, settings=settings)

@@ -84,5 +84,9 @@ h1.astal-heading { text-align: center; font-size: clamp(2rem, 5vw, 8rem); margin
     100% { -webkit-clip-path: inset(0% 0% 0% 0%); clip-path: inset(0% 0% 0% 0%); }
 }
 
+/* Vertikalni border između "Stolovi za 2 osobe" i "Stolovi za 4 osobe" */
+.border-v {
+    border-left: 2px solid #bbb !important;
+}
 
 /* dodao Mihas */

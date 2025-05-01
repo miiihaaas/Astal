@@ -14,25 +14,29 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Interval</th>
-            <th>Broj raspoloživih stolova (2)</th>
-            <th>Broj rezervisanih stolova (2)</th>
-            <th>Broj slobodnih stolova (2)</th>
-            <th>Broj raspoloživih stolova (4)</th>
-            <th>Broj rezervisanih stolova (4)</th>
-            <th>Broj slobodnih stolova (4)</th>
+            <th rowspan="2" class="align-middle text-center">Interval</th>
+            <th colspan="3" class="text-center">Stolovi za 2 osobe</th>
+            <th colspan="3" class="text-center border-v">Stolovi za 4 osobe</th>
+        </tr>
+        <tr>
+            <th class="text-center">Raspoloživo</th>
+            <th class="text-center">Rezervisano</th>
+            <th class="text-center">Slobodno</th>
+            <th class="text-center border-v">Raspoloživo</th>
+            <th class="text-center">Rezervisano</th>
+            <th class="text-center">Slobodno</th>
         </tr>
     </thead>
     <tbody>
         {% for row in table %}
         <tr>
-            <td>{{ row['interval'] }}</td>
+            <td class="align-middle text-center">{{ row['interval'] }}</td>
             <td><input type="number" class="available-tables" data-interval="{{ row['interval'] }}" name="available_tables_2" value="{{ row['available_tables_2'] }}"></td>
-            <td>{{ row['booked_tables_2'] }}</td>
-            <td>{{ row['free_tables_2'] }}</td>
-            <td><input type="number" class="available-tables" data-interval="{{ row['interval'] }}" name="available_tables_4" value="{{ row['available_tables_4'] }}"></td>
-            <td>{{ row['booked_tables_4'] }}</td>
-            <td>{{ row['free_tables_4'] }}</td>
+            <td class="align-middle text-center">{{ row['booked_tables_2'] }}</td>
+            <td class="align-middle text-center">{{ row['free_tables_2'] }}</td>
+            <td class="border-v"><input type="number" class="available-tables" data-interval="{{ row['interval'] }}" name="available_tables_4" value="{{ row['available_tables_4'] }}"></td>
+            <td class="align-middle text-center">{{ row['booked_tables_4'] }}</td>
+            <td class="align-middle text-center">{{ row['free_tables_4'] }}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -59,7 +63,6 @@
         } else if (e.target.classList.contains('available-tables')) {
             var interval = e.target.dataset.interval;
             var availableTables_2, availableTables_4;
-
             if (e.target.name === 'available_tables_2') {
                 availableTables_2 = e.target.value;
                 availableTables_4 = document.querySelector(`input[data-interval="${interval}"][name="available_tables_4"]`).value;
@@ -68,13 +71,11 @@
                 availableTables_2 = document.querySelector(`input[data-interval="${interval}"][name="available_tables_2"]`).value;
             }
             var reservationDate = document.getElementById('reservation_date').value;
-            
             var formData = new FormData();
             formData.append('interval', interval);
             formData.append('available_tables_2', availableTables_2);
             formData.append('available_tables_4', availableTables_4);
             formData.append('reservation_date', reservationDate);
-            
             fetch('{{ url_for("admin.update_tables") }}', {
                 method: 'POST',
                 body: formData
