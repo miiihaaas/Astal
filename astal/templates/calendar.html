@@ -7,6 +7,7 @@
             <label class="mt-2 mb-2" for="reservation_date">Izaberite datum</label>
             <input class="form-control d-inline-block mt-2 mb-2" name="reservation_date" id="reservation_date" type="date" min="{{ min_date }}" max="{{ max_date }}" value="{{ selected_date }}">
             <a class="btn btn-primary ml-4 mt-2 mb-2" href="" id="reservation_link">Rezervacije</a>
+            <button type="button" class="btn btn-danger ml-4 mt-2 mb-2" id="reset_tables">Postavi kao neradan dan</button>
         </div>
     </div>
 </form>
@@ -80,7 +81,6 @@
             })
             .then(response => response.json())
             .then(data => {
-                // console.log('Success:', data); //! ovo je bilo pre nego što je dodat if blok
                 if (data.success) {
                     var currentUrl = new URL(window.location.href);
                     currentUrl.searchParams.set('selected_date', reservationDate);
@@ -88,7 +88,6 @@
                 } else {
                     console.error('Update failed:', data);
                 }
-                // console.log('Success:', data); //! ovo je bilo pre nego što je dodat if blok
             })
             .catch(error => console.error('Error:', error));
         }
@@ -99,6 +98,34 @@
         var url = new URL('{{ url_for("admin.reservations") }}', window.location.origin);
         url.searchParams.set('selected_date', reservationDate);
         window.location.href = url.href;
+    });
+    document.getElementById('reset_tables').addEventListener('click', function(e) {
+        e.preventDefault();
+        var reservationDate = document.getElementById('reservation_date').value;
+        if (!reservationDate) {
+            alert('Izaberite datum.');
+            return;
+        }
+        if (!confirm('Da li ste sigurni da želite da postavite sve vrednosti na nulu za izabrani datum?')) return;
+        fetch('{{ url_for("admin.reset_tables") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ reservation_date: reservationDate })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                var currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('selected_date', reservationDate);
+                window.location.href = currentUrl.href;
+            } else {
+                alert('Došlo je do greške.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
     });
 </script>
 {% endblock scripts %}
