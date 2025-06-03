@@ -183,6 +183,12 @@ def payment_form(language):
         elif language == 'en':
             flash('You have already reserved a table for this day. If you have additional needs, please contact us at +382 68 333 444.', 'info')
         return redirect(url_for('main.home', language=language))
+    elif new_reservation == 'invalid_date':
+        if language == 'mn':
+            flash('Nije moguće rezervisati sto za dan pre danasnjeg. Ukoliko imate dodatna pitanja, molmio Vas kontaktirajte nas na +382 68 333 444.', 'info')
+        elif language == 'en':
+            flash('You cannot reserve a table for a day before today. If you have additional needs, please contact us at +382 68 333 444.', 'info')
+        return redirect(url_for('main.home', language=language))
     
     print(f'{request.form=}')
     form.reservation_date.data = request.form.get('reservation_date')

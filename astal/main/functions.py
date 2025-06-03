@@ -194,6 +194,9 @@ def add_user_to_db(form):
 def create_reservation(form, user):
     settings = Settings.query.first()
     reservation_date = form.reservation_date.data
+    today = datetime.now().date()
+    if reservation_date < today:
+        return 'invalid_date'
     number_of_people = form.number_of_people.data
     note = form.user_note.data
     # Pretpostavljamo da dobijate reservation_time iz request.form
