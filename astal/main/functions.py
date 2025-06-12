@@ -1,7 +1,7 @@
 
 import calendar
 from datetime import datetime, timedelta
-import re
+import re, os
 from time import sleep
 
 from flask import flash, redirect, render_template, url_for
@@ -16,10 +16,10 @@ def define_min_and_max_dates():
     Returns a tuple containing the minimum and maximum dates available for
     reservations.
 
-    The minimum date is today's date, and the maximum date is the last day of
+    The minimum date is tomorrow's date, and the maximum date is the last day of
     two months from today's date.
     """
-    min_date = datetime.today().date()
+    min_date = datetime.today().date() + timedelta(days=1)
     # Dva meseca unapred
     two_months_later = min_date.replace(day=1) + timedelta(days=62)
     # Poslednji dan u mesecu dva meseca unapred
@@ -194,15 +194,16 @@ def add_user_to_db(form):
 def create_reservation(form, user):
     settings = Settings.query.first()
     reservation_date = form.reservation_date.data
-    today = datetime.now().date()
-    if reservation_date < today:
+    min_date = datetime.now().date() + deltatime(days=1)
+    if reservation_date < min_date:
+        app.logger.warning(f"Pokušaj kreiranja rezervacije za datum u prošlosti: {reservation_date}")
         return 'invalid_date'
     number_of_people = form.number_of_people.data
     note = form.user_note.data
     # Pretpostavljamo da dobijate reservation_time iz request.form
     reservation_time = form.reservation_time.data
-    print(f' *** {reservation_date=}')
-    print(f' *** {reservation_time=}')
+    app.logger.info(f' *** {reservation_date=}')
+    app.logger.info(f' *** {reservation_time=}')
 
     # Pretvaramo reservation_time string u datetime objekat
     reservation_time_obj = datetime.strptime(reservation_time, "%H:%M")
@@ -327,6 +328,7 @@ def send_email(user, new_reservation, language):
     try:
         mail.send(message)
         # flash('Mejl je uspesno poslat', 'success')
+        log_reservation_message(new_reservation)
         print('mejl je uspešno poslat')
     except Exception as e:
         flash('Greska prilikom slanja mejla: ' + str(e), 'danger')
@@ -356,3 +358,45 @@ def test():
     sleep(10)
     print('posle 10 sekundi')
     return('Test je uspešno izvršen')
+
+
+def log_reservation_message(new_reservation):
+    '''
+    Kreira novi log fajl u folderu app_logs/reservations_data u kome skladišti neophodne informacije o rezervaciji
+    i proverava validnost datuma rezervacije
+    '''
+
+    # Kreiranje direktorijuma za pojedinačne logove rezervacija
+    base_dir = os.path.join(os.getcwd(), 'app_logs', 'reservations_data')
+    os.makedirs(base_dir, exist_ok=True)
+    
+    # Kreiranje log fajla za konkretnu rezervaciju
+    log_file = os.path.join(base_dir, f'{new_reservation.reservation_number}.log')
+    now = datetime.now()
+    now_str = now.strftime('%Y-%m-%d %H:%M:%S')
+    
+    # Provera validnosti datuma rezervacije
+    min_date = datetime.today().date() + timedelta(days=1)
+    reservation_date = new_reservation.reservation_date
+    reservation_date_str = reservation_date.strftime('%Y-%m-%d')
+    
+    # Logovanje informacija o rezervaciji
+    with open(log_file, 'a', encoding='utf-8') as f:
+        f.write("\n==============================\n")
+        f.write(f'{now_str} - Rezervacija {new_reservation.reservation_number} je kreirana\n')
+        f.write(f'Broj osoba: {new_reservation.number_of_people}\n')
+        f.write(f'Datum rezervacije: {reservation_date_str}\n')
+        f.write(f'Minimalni datum za rezervaciju: {min_date}\n')
+        
+        # Provera da li je datum rezervacije u prošlosti
+        if reservation_date < min_date:
+            warning_msg = f'UPOZORENJE: Datum rezervacije ({reservation_date_str}) je u prošlosti u odnosu na minimalni datum za rezervaciju ({min_date})!\n'
+            f.write(warning_msg)
+            app.logger.warning(f'Kreirana je rezervacija za datum u prošlosti! Broj rezervacije: {new_reservation.reservation_number}, Datum rez: {reservation_date_str}, Minimalni datum rezervacije: {min_date}')
+        
+        f.write(f'Vreme početka: {new_reservation.start_time}\n')
+        f.write(f'Vreme kraja: {new_reservation.end_time}\n')
+        f.write(f'Napomena: {new_reservation.note}\n')
+        f.write(f'Vreme kreiranja: {new_reservation.timestamp}\n')
+        f.write("\n==============================\n")
+    
