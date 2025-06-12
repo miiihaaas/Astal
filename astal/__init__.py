@@ -6,13 +6,27 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
 from celery import Celery
-
-
+import logging
+from logging.handlers import RotatingFileHandler
 
 
 load_dotenv()
 
+
+# Podešavanje logovanja
+if not os.path.exists('app_logs'):
+    os.makedirs('app_logs')
+file_handler = RotatingFileHandler('app_logs/astal.log', maxBytes=100240, backupCount=8, encoding='utf-8')
+file_handler.setFormatter(logging.Formatter(
+    '%(asctime)s %(levelname)s in %(module)s [%(pathname)s:%(lineno)d]: %(message)s'
+))
+file_handler.setLevel(logging.DEBUG)
+
 app = Flask(__name__)
+app.logger.addHandler(file_handler)
+app.logger.setLevel(logging.DEBUG)
+
+
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 #kod ispod treba da reši problem Internal Server Error - komunikacija sa serverom

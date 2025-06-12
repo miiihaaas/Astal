@@ -248,8 +248,8 @@ def conformation(language):
     string_to_hash = f'{wspay_shop_id}{wspay_sekret_key}{str(new_reservation.id)}{wspay_sekret_key}{success}{wspay_sekret_key}{approval_code}{wspay_sekret_key}'
     # Generiranje SHA-512 hasha
     signature = hashlib.sha512(string_to_hash.encode('utf-8')).hexdigest()
-    print(f'{string_to_hash=}')
-    print(f'{signature=}')
+    app.logger.info(f'{string_to_hash=}')
+    app.logger.info(f'{signature=}')
     
     if recived_signature != signature:
         if language == 'mn':
@@ -260,7 +260,7 @@ def conformation(language):
     
     
     send_email(user, new_reservation, language)
-    print(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')
+    app.logger.info(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')
     #!
     # reservation_datetime = datetime.combine(
     #     new_reservation.reservation_date,
@@ -315,7 +315,7 @@ def conformation_local(language, reservation_id):
     
     
     send_email(user, new_reservation, language)
-    print(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')
+    app.logger.info(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')
     
     new_reservation.status = 'pending'
     
