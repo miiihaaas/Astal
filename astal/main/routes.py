@@ -302,48 +302,48 @@ def conformation(language):
                             language=language)
 
 
-@main.route('/conformation_local/<string:language>/<int:reservation_id>', methods=['GET', 'POST'])
-def conformation_local(language, reservation_id):
-    settings = Settings.query.first()
+# @main.route('/conformation_local/<string:language>/<int:reservation_id>', methods=['GET', 'POST'])
+# def conformation_local(language, reservation_id):
+#     settings = Settings.query.first()
     
-    new_reservation = Reservation.query.get_or_404(reservation_id)
-    user = User.query.get_or_404(new_reservation.user_id)
+#     new_reservation = Reservation.query.get_or_404(reservation_id)
+#     user = User.query.get_or_404(new_reservation.user_id)
     
-    number_of_people = int(new_reservation.number_of_people)
-    reservation_date = new_reservation.reservation_date
+#     number_of_people = int(new_reservation.number_of_people)
+#     reservation_date = new_reservation.reservation_date
 
     
     
-    send_email(user, new_reservation, language)
-    app.logger.info(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')
+#     send_email(user, new_reservation, language)
+#     app.logger.info(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')
     
-    new_reservation.status = 'pending'
+#     new_reservation.status = 'pending'
     
-    # reservations = get_or_create_reservations(form)
-    reservations = get_or_create_reservations_(new_reservation)
-    table_options = calculate_required_tables(number_of_people)
+#     # reservations = get_or_create_reservations(form)
+#     reservations = get_or_create_reservations_(new_reservation)
+#     table_options = calculate_required_tables(number_of_people)
     
-    updated_intervals = book_tables(new_reservation.start_time, json.loads(reservations.intervals), new_reservation.id, user.id, table_options, 12)
-    reservations.intervals = json.dumps(updated_intervals)
-    try:
-        db.session.commit()
-        print('Data successfully updated in the database.')
-    except Exception as e:
-        db.session.rollback()
-        print(f'Error during commit: {e}')
-    if language == 'mn':
-        flash(f'Uspešno ste napravili rezervaciju. Informacije o rezervaciji će stići na Vašu email adresu.', 'success')
-    else:
-        flash(f'You have successfully made a reservation. The reservation information will be sent to your email address.', 'success')
-    return render_template('conformation_page.html', 
-                            reservation_number=new_reservation.reservation_number,
-                            reservation_date=reservation_date, #!
-                            reservation_time=new_reservation.start_time,
-                            number_of_people=number_of_people,
-                            note=new_reservation.note,
-                            title=f'{settings.restaurant_name} - Rezervacije',
-                            settings=settings,
-                            language=language)
+#     updated_intervals = book_tables(new_reservation.start_time, json.loads(reservations.intervals), new_reservation.id, user.id, table_options, 12)
+#     reservations.intervals = json.dumps(updated_intervals)
+#     try:
+#         db.session.commit()
+#         print('Data successfully updated in the database.')
+#     except Exception as e:
+#         db.session.rollback()
+#         print(f'Error during commit: {e}')
+#     if language == 'mn':
+#         flash(f'Uspešno ste napravili rezervaciju. Informacije o rezervaciji će stići na Vašu email adresu.', 'success')
+#     else:
+#         flash(f'You have successfully made a reservation. The reservation information will be sent to your email address.', 'success')
+#     return render_template('conformation_page.html', 
+#                             reservation_number=new_reservation.reservation_number,
+#                             reservation_date=reservation_date, #!
+#                             reservation_time=new_reservation.start_time,
+#                             number_of_people=number_of_people,
+#                             note=new_reservation.note,
+#                             title=f'{settings.restaurant_name} - Rezervacije',
+#                             settings=settings,
+#                             language=language)
 
 
 @main.route('/cancel_url/<string:language>', methods=['GET'])
