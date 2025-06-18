@@ -4,7 +4,7 @@ import hashlib
 import os
 from flask import Blueprint, json, jsonify, redirect, render_template, flash, request, url_for
 from flask_login import current_user
-from astal import db
+from astal import db, app
 from astal.admin.functions import create_working_intervals, define_working_hours
 from astal.main.forms import PaymentFormEnglish, PaymentFormSerbian, ReservationFormEnglish, ReservationFormSerbian
 from astal.models import Settings, User, Reservation, Calendar
