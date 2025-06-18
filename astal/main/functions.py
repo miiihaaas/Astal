@@ -194,7 +194,7 @@ def add_user_to_db(form):
 def create_reservation(form, user):
     settings = Settings.query.first()
     reservation_date = form.reservation_date.data
-    min_date = datetime.now().date() + deltatime(days=1)
+    min_date = datetime.now().date() + timedelta(days=1)
     if reservation_date < min_date:
         app.logger.warning(f"Pokušaj kreiranja rezervacije za datum u prošlosti: {reservation_date}")
         return 'invalid_date'
