@@ -47,6 +47,7 @@ class Reservation(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     status = db.Column(db.String(20), nullable=False, default='unpaid') #! unpaid, pending, confirmed, cancelled, finished
+    sent_mail = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
         return f"Reservation('{self.reservation_date}', '{self.number_of_people}', '{self.amount}')"

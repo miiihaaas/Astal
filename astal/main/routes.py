@@ -274,6 +274,7 @@ def conformation(language):
     #!
     
     new_reservation.status = 'pending'
+    new_reservation.sent_mail = True
     
     # reservations = get_or_create_reservations(form)
     reservations = get_or_create_reservations_(new_reservation)
@@ -318,6 +319,7 @@ def conformation_local(language, reservation_id):
     app.logger.info(f'prvi mejl bi trebalo da stigne oko {datetime.now()=}')
     
     new_reservation.status = 'pending'
+    new_reservation.sent_mail = True
     
     # reservations = get_or_create_reservations(form)
     reservations = get_or_create_reservations_(new_reservation)

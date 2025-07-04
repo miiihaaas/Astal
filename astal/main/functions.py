@@ -310,6 +310,10 @@ def book_tables(start_time, intervals, reservation_id, user_id, table_options, n
 #! https://chatgpt.com/g/g-cKXjWStaE-python/c/f80b28cc-e589-4fe4-9f95-f0f0cb60d85f
 
 def send_email(user, new_reservation, language):
+    if new_reservation.sent_mail:
+        app.logger.info(f'Mejl je vec poslat.')
+        print('Mejl je vec poslat.')
+        return
     settings = Settings.query.first()
     sender = settings.email_noreply
     recipients = [user.email]
