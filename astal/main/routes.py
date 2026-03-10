@@ -218,9 +218,15 @@ def payment_form(language):
         'ShopID': os.getenv('WSPAY_SHOPID'),
         'ShoppingCartID': str(new_reservation.id),
         'TotalAmount': f'{form.amount.data:.2f}'.replace('.', ','),
-        'Signature': signature
+        'Signature': signature,
+        'FormURL': os.getenv('WSPAY_FORM_URL'),
+        'CustomerFirstName': form.user_name.data,
+        'CustomerLastName': form.user_surname.data,
+        'CustomerEmail': form.user_email.data,
+        'CustomerPhone': form.user_phone.data,
+        'Lang': 'HR' if language == 'mn' else 'EN',
     }
-    
+
     return render_template('payment_form.html',
                             settings=settings,
                             form=form,
