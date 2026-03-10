@@ -129,42 +129,24 @@ def get_interval_options(intervals, min_date, reservation_date, table_options, c
 
 
 def is_valid_user_input(form):
-    user_email = form.user_email.data
-    user_name = form.user_name.data
-    user_surname = form.user_surname.data
-    user_phone = form.user_phone.data
-    user_inputs = [user_email, user_name, user_surname, user_phone]
+    user_email = form.user_email.data or ''
+    user_name = form.user_name.data or ''
+    user_surname = form.user_surname.data or ''
+    user_phone = form.user_phone.data or ''
     valid_input = True
-    if not user_inputs[0]:
-        # flash('Unesite email', 'danger')
-        valid_input = False
-    if not re.match(r"^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{2,}$", user_inputs[0]):
-        # flash('Email nije validan', 'danger')
-        valid_input = False
-    
-    if not user_inputs[1]:
-        # flash('Unesite svoje Ime', 'danger')
-        valid_input = False
-    if len(user_inputs[1]) < 2:
-        # flash('Ime mora imati najmanje 2 slova', 'danger')
+
+    if not user_email or not re.match(r"^[a-zA-Z0-9._%+-]{2,}@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{2,}$", user_email):
         valid_input = False
 
-    if not user_inputs[2]:
-        # flash('Unesite svoje Prezime', 'danger')
-        valid_input = False
-    if len(user_inputs[2]) < 3:
-        # flash('Prezime mora imati najmanje 3 slova', 'danger')
+    if not user_name or len(user_name) < 2:
         valid_input = False
 
-    if not user_inputs[3]:
-        # flash('Unesite broj telefona', 'danger')
+    if not user_surname or len(user_surname) < 3:
         valid_input = False
-    if user_inputs[3] and not user_inputs[3].isdigit():
-        # flash('Broj telefona treba da se sastoji samo od cifara', 'danger')
+
+    if not user_phone or not user_phone.isdigit() or len(user_phone) < 9 or len(user_phone) > 13:
         valid_input = False
-    if len(user_inputs[3]) < 9 or len(user_inputs[3]) > 13:
-        # flash('Broj telefona mora imati izmedju 9 i 13 cifara', 'danger')
-        valid_input = False
+
     return valid_input
 
 def add_user_to_db(form):
