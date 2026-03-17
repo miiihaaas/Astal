@@ -9,6 +9,10 @@ header.container.logedin { display: flex; justify-content: space-between; min-he
 .logo { max-width: 180px; z-index: 1000; width: 180px; height: 180px;}
 .navbar-light .navbar-brand:focus, .navbar-light .navbar-brand:hover { color: #0bbbef }
 h1 { text-align: center; }
+ul.languages { list-style: none; display: flex; padding: 0; }
+ul.languages  li:first-child { border-right: 1px solid #ccc; padding-right: 10px; }
+ul.languages  li:last-child { padding-left: 10px; }
+ul.languages  li a { text-decoration: none; color: #0bbbef; }
 .cormorant { font-family: 'Cormorant Garamond', serif; }
 label.cormorant { font-size: 24px; /*font-style: italic;*/ color: #0bbbef; }
 .container.astal-form { padding: 0 10px; }
@@ -47,6 +51,9 @@ h1.astal-heading { text-align: center; font-size: clamp(2rem, 5vw, 8rem); margin
 .menu-toggle .toggle-lines:not(.collapsed) .toggle-line:first-child { -webkit-transform: rotate(-135deg); -ms-transform: rotate(-135deg); transform: rotate(-135deg); }
 .menu-toggle .toggle-lines:not(.collapsed) .toggle-line:last-child { -webkit-transform: rotate(-45deg); -ms-transform: rotate(-45deg); transform: rotate(-45deg); margin-top: -5px; }
 
+footer { margin: 50px 0; overflow: hidden; }
+footer .row { justify-content: center; gap:10px; }
+footer .row a, footer .row img { width: auto; padding: 0; }
 
 @media (max-width: 768px) {
     #ball { display: none; }
