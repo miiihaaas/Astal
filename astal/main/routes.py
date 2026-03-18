@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 import hashlib
 import os
-from flask import Blueprint, json, jsonify, redirect, render_template, flash, request, url_for
+from flask import Blueprint, json, jsonify, redirect, render_template, flash, request, session, url_for
 from flask_login import current_user
 from astal import db, app
 from astal.admin.functions import create_working_intervals, define_working_hours
@@ -119,8 +119,17 @@ def home(language):
                 #     elif language == 'en':
                 #         flash('You have already reserved a table for this day. If you have additional needs, please contact us at +382 68 333 444.', 'info')
                 #     return redirect(url_for('main.home', language=language))
-                # Redirect to payment_form route with POST request
-                return redirect(url_for('main.payment_form', language=language), code=307)
+                session['payment_form_data'] = {
+                    'reservation_date': str(form.reservation_date.data),
+                    'number_of_people': form.number_of_people.data,
+                    'reservation_time': form.reservation_time.data,
+                    'user_email': form.user_email.data,
+                    'user_name': form.user_name.data,
+                    'user_surname': form.user_surname.data,
+                    'user_phone': form.user_phone.data,
+                    'user_note': form.user_note.data or '',
+                }
+                return redirect(url_for('main.payment_form', language=language))
 
         elif submit_type == 'input_change':
             print('izmena datuma ili broja osoba')
@@ -163,13 +172,26 @@ def home(language):
                             language=language)
 
 
-@main.route('/payment_form/<string:language>', methods=['GET', 'POST'])
+@main.route('/payment_form/<string:language>', methods=['GET'])
 def payment_form(language):
     settings = Settings.query.first()
     if language == 'mn':
         form = PaymentFormSerbian()
     elif language == 'en':
         form = PaymentFormEnglish()
+
+    form_data = session.pop('payment_form_data', None)
+    if not form_data:
+        return redirect(url_for('main.home', language=language))
+
+    form.reservation_date.data = datetime.strptime(form_data['reservation_date'], '%Y-%m-%d').date()
+    form.number_of_people.data = int(form_data['number_of_people'])
+    form.reservation_time.data = form_data['reservation_time']
+    form.user_email.data = form_data['user_email']
+    form.user_name.data = form_data['user_name']
+    form.user_surname.data = form_data['user_surname']
+    form.user_phone.data = form_data['user_phone']
+    form.user_note.data = form_data['user_note']
 
     if is_valid_user_input(form):
         user = add_user_to_db(form)
@@ -189,17 +211,8 @@ def payment_form(language):
         elif language == 'en':
             flash('You cannot reserve a table for a day before today. If you have additional needs, please contact us at +382 68 333 444.', 'info')
         return redirect(url_for('main.home', language=language))
-    
-    print(f'{request.form=}')
-    form.reservation_date.data = request.form.get('reservation_date')
-    form.number_of_people.data = request.form.get('number_of_people')
-    form.amount.data = int(request.form.get('number_of_people')) * settings.reservation_coast_per_person
-    form.reservation_time.data = request.form.get('reservation_time')
-    form.user_email.data = request.form.get('user_email')
-    form.user_name.data = request.form.get('user_name')
-    form.user_surname.data = request.form.get('user_surname')
-    form.user_phone.data = request.form.get('user_phone')
-    form.user_note.data = request.form.get('user_note')
+
+    form.amount.data = int(form_data['number_of_people']) * settings.reservation_coast_per_person
     
     #! WSPAY data
     wspay_shop_id = os.getenv('WSPAY_SHOPID')
@@ -218,9 +231,15 @@ def payment_form(language):
         'ShopID': os.getenv('WSPAY_SHOPID'),
         'ShoppingCartID': str(new_reservation.id),
         'TotalAmount': f'{form.amount.data:.2f}'.replace('.', ','),
-        'Signature': signature
+        'Signature': signature,
+        'FormURL': os.getenv('WSPAY_FORM_URL'),
+        'CustomerFirstName': form.user_name.data,
+        'CustomerLastName': form.user_surname.data,
+        'CustomerEmail': form.user_email.data,
+        'CustomerPhone': form.user_phone.data,
+        'Lang': 'HR' if language == 'mn' else 'EN',
     }
-    
+
     return render_template('payment_form.html',
                             settings=settings,
                             form=form,
