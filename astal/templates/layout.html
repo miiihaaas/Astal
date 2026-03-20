@@ -35,7 +35,7 @@
             <div class="logo">
                 <!-- <a href="google.com"><img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo"></a> -->
                 
-                <a href="{{ settings.site_link | safe }}"> 
+                <a href="/"> 
                     <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
                 </a>
                 <!-- <a href="{{ settings.site_link }}">
@@ -76,7 +76,7 @@
         <header class="container">
             <div class="logo">
                 <!-- <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo"> -->
-                <a href="{{ settings.site_link | safe }}"> 
+                <a href="/"> 
                     <img src="{{ url_for('static', filename='img/cmk-logo.svg') }}" alt="logo">
                 </a>
             </div>
@@ -100,7 +100,7 @@
             </div>
         </main>
         <footer>
-            <div class="row">
+            <div class="row gaprow mb-5">
                 <a href="https://www.wspay.info/mastercard-securecode.html" target="_blank"> 
                     <img src="{{ url_for('static', filename='img/cards/mastercard-identity-check.png') }}" alt="MasterCard SecureCode">
                 </a>
@@ -117,6 +117,31 @@
                 <a href="http://www.wspay.info" title="Monri WSpay - Web Secure Payment Gateway" target="_blank">
                     <img src="{{ url_for('static', filename='img/cards/wsPayWebSecureLogo-118x50-transparent.png') }}" alt="Monri WSpay - Web Secure Payment Gateway">
                 </a> 
+            </div>
+            <div class="row mb-5">
+                <div class="col-md-3 mob-mb-5 text-right">
+                    „Larry&amp;brother&#39;s company“d.o.o.<br>
+                    Polje bb, 85338 Morinj Crna Gora<br>
+                    PIB:02057760<br>
+                    PDV: 92/31-0000-27<br>
+                    Web: www.catovica-mlini.com<br>
+                    Tel.: 068/333-444<br>
+                    Mail: catovicamlini@t-com.me
+                </div>
+                <div class="col-md-3">
+                    <ul class="footer-menu">
+                        <li><a href="{{ url_for('main.informacije_o_uslugama') }}">Informacije o uslugama</a></li>
+                        <li><a href="{{ url_for('main.uslovi_prodaje') }}">Uslovi prodaje</a></li>
+                        <li><a href="{{ url_for('main.zastitа_podataka') }}">Način zaštite poverljivih podataka</a></li>
+                        <li><a href="{{ url_for('main.prikupljanje_podataka') }}">Izjava o prikupljanju i korišćenju ličnih podataka</a></li>
+                        <li><a href="{{ url_for('main.izjava_konverziji') }}">Izjava o konverziji</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="text-center">© {{ settings.site_name }} {{ settings.site_year }}. Sva prava zaštićena.</p>
+                </div>
             </div>
         </footer>
         <!-- Optional JavaScript -->

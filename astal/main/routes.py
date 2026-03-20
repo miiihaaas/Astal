@@ -383,3 +383,28 @@ def return_error_url(language):
     elif language == 'en':
         flash('An error occurred while creating the reservation.', 'danger')
     return redirect(url_for('main.home', language=language))
+
+@main.route('/informacije-o-uslugama')
+def informacije_o_uslugama():
+    settings = Settings.query.first()
+    return render_template('informacije_o_uslugama.html', settings=settings)
+
+@main.route('/uslovi_prodaje')
+def uslovi_prodaje():
+    settings = Settings.query.first()
+    return render_template('uslovi_prodaje.html', settings=settings)
+
+@main.route('/zastitа_podataka')
+def zastitа_podataka():
+    settings = Settings.query.first()
+    return render_template('zastitа_podataka.html', settings=settings)
+
+@main.route('/prikupljanje_podataka')
+def prikupljanje_podataka():
+    settings = Settings.query.first()
+    return render_template('prikupljanje_podataka.html', settings=settings)
+
+@main.route('/izjava_konverziji')
+def izjava_konverziji():
+    settings = Settings.query.first()
+    return render_template('izjava_konverziji.html', settings=settings)
