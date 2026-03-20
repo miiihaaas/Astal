@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-5">Informacije o uslugama</h1>
+    <div class="row mb-5">
+        <div class="col-md-6 pdf-box">
+            <a href="{{ url_for('static', filename='docs/jelovnik-zimski.pdf') }}" class="btn btn-primary" target="_blank">Jelovnik</a>
+            <a href="{{ url_for('static', filename='docs/vinska-karta.pdf') }}" class="btn btn-primary" target="_blank">Vinska karta</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block scripts %}
+<script>
+    // Ovdje možete dodati JavaScript kod specifičan za ovu stranicu, ako je potrebno
+</script>
+{% endblock scripts %}

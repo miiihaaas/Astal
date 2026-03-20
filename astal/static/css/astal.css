@@ -1,5 +1,4 @@
 ﻿body { font-family: 'Montserrat', sans-serif; background-color: #ebebeb; }
-body::before { content: " GUŠTAJTE..."; position: absolute; top: 35%; left: 5%; font-size: 16vw; color: rgba(255, 255, 255, 0.3); z-index: -1; white-space: nowrap; }
 #ball { position: absolute; width: 12px; height: 12px; background-color: #c8d400; border-radius: 50%; pointer-events: none; transition: width 0.3s, height 0.3s; }
 body.reservations #ball, body.settings #ball, body.calendar #ball { display: none; }
 .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl { max-width: 1500px; }
@@ -51,12 +50,18 @@ h1.astal-heading { text-align: center; font-size: clamp(2rem, 5vw, 8rem); margin
 .menu-toggle .toggle-lines:not(.collapsed) .toggle-line:first-child { -webkit-transform: rotate(-135deg); -ms-transform: rotate(-135deg); transform: rotate(-135deg); }
 .menu-toggle .toggle-lines:not(.collapsed) .toggle-line:last-child { -webkit-transform: rotate(-45deg); -ms-transform: rotate(-45deg); transform: rotate(-45deg); margin-top: -5px; }
 
-footer { margin: 50px 0; overflow: hidden; }
-footer .row { justify-content: center; gap:10px; }
+.pdf-box { display: flex; gap: 20px; justify-content: center; margin: auto; }
+
+footer { margin: 50px 0; overflow: hidden; padding: 0 20px; }
+footer .row { justify-content: center; }
+footer .gaprow { gap:10px; }
 footer .row a, footer .row img { width: auto; padding: 0; }
+.footer-menu { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.footer-menu li a { text-decoration: none; color: #0bbbef; }
 
 @media (max-width: 768px) {
     #ball { display: none; }
+    .mob-mb-5 { margin-bottom: 3em; }
 }
 @media (max-width: 991px) {
     .navbar>.container-fluid { display: flex; flex-wrap: inherit; align-items: center; justify-content: end; }
@@ -69,8 +74,10 @@ footer .row a, footer .row img { width: auto; padding: 0; }
     .ml-4 { margin-left: 1.5rem !important; }
     .vertical-even { display: flex; flex-direction: column; justify-content: space-between; }
     /*input#reservation_date, input#number_of_people, select#reservation_time { width: auto; }*/
+    .text-right { text-align: right !important; }
 }
 @media (min-width: 992px) {
+    body::before { content: " GUŠTAJTE..."; position: absolute; top: 35%; left: 5%; font-size: 16vw; color: rgba(255, 255, 255, 0.3); z-index: -1; white-space: nowrap; }
     .menu-toggle { display: none; }
 }
 
