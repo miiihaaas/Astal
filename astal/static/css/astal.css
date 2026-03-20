@@ -10,7 +10,7 @@ header.container.logedin { display: flex; justify-content: space-between; min-he
 h1 { text-align: center; }
 ul.languages { list-style: none; display: flex; padding: 0; }
 ul.languages  li:first-child { border-right: 1px solid #ccc; padding-right: 10px; }
-ul.languages  li:last-child { padding-left: 10px; }
+/* ul.languages  li:last-child { padding-left: 10px; } */
 ul.languages  li a { text-decoration: none; color: #0bbbef; }
 .cormorant { font-family: 'Cormorant Garamond', serif; }
 label.cormorant { font-size: 24px; /*font-style: italic;*/ color: #0bbbef; }
