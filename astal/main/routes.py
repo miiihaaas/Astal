@@ -394,10 +394,10 @@ def uslovi_prodaje():
     settings = Settings.query.first()
     return render_template('uslovi_prodaje.html', settings=settings)
 
-@main.route('/zastitа_podataka')
-def zastitа_podataka():
+@main.route('/zastita_podataka')
+def zastita_podataka():
     settings = Settings.query.first()
-    return render_template('zastitа_podataka.html', settings=settings)
+    return render_template('zastita_podataka.html', settings=settings)
 
 @main.route('/prikupljanje_podataka')
 def prikupljanje_podataka():
