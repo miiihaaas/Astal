@@ -58,6 +58,7 @@ footer .gaprow { gap:10px; }
 footer .row a, footer .row img { width: auto; padding: 0; }
 .footer-menu { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .footer-menu li a { text-decoration: none; color: #0bbbef; }
+.footer-menu li:last-child { padding-left: 0 !important; }
 
 @media (max-width: 768px) {
     #ball { display: none; }
