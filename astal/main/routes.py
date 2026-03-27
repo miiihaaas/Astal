@@ -408,3 +408,13 @@ def prikupljanje_podataka():
 def izjava_konverziji():
     settings = Settings.query.first()
     return render_template('izjava_konverziji.html', settings=settings)
+
+@main.route('/izjava_o_zastiti_prenosa_podataka')
+def izjava_o_zastiti_prenosa_podataka():
+    settings = Settings.query.first()
+    return render_template('izjava_o_zastiti_prenosa_podataka.html', settings=settings)
+
+@main.route('/izjava-o-koristenju-monri-wspay')
+def izjava_o_koristenju_monri_wspay():
+    settings = Settings.query.first()
+    return render_template('izjava_o_koristenju_monri_wspay.html', settings=settings)
