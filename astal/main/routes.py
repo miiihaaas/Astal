@@ -213,32 +213,38 @@ def payment_form(language):
         return redirect(url_for('main.home', language=language))
 
     form.amount.data = int(form_data['number_of_people']) * settings.reservation_coast_per_person
-    
-    #! WSPAY data
-    wspay_shop_id = os.getenv('WSPAY_SHOPID')
-    wspay_sekret_key = os.getenv('WSPAY_SEKRET_KEY')
-    total_amoount = f'{form.amount.data:.2f}'.replace('.', '').replace(',', '') #! primer 17,35 je 1735
-    print(f'{total_amoount=}')
-    print(f'{new_reservation.id=}')
-    
-    string_to_hash = f'{wspay_shop_id}{wspay_sekret_key}{str(new_reservation.id)}{wspay_sekret_key}{total_amoount}{wspay_sekret_key}'
-    # Generiranje SHA-512 hasha
-    signature = hashlib.sha512(string_to_hash.encode('utf-8')).hexdigest()
-    print(f'{string_to_hash=}')
-    print(f'{signature=}')
-    
-    wspay_data = {
-        'ShopID': os.getenv('WSPAY_SHOPID'),
-        'ShoppingCartID': str(new_reservation.id),
-        'TotalAmount': f'{form.amount.data:.2f}'.replace('.', ','),
-        'Signature': signature,
-        'FormURL': os.getenv('WSPAY_FORM_URL'),
-        'CustomerFirstName': form.user_name.data,
-        'CustomerLastName': form.user_surname.data,
-        'CustomerEmail': form.user_email.data,
-        'CustomerPhone': form.user_phone.data,
-        'Lang': 'HR' if language == 'mn' else 'EN',
-    }
+
+    if app.config['PAYMENT_ENABLED']:
+        #! WSPAY data
+        wspay_shop_id = os.getenv('WSPAY_SHOPID')
+        wspay_sekret_key = os.getenv('WSPAY_SEKRET_KEY')
+        total_amoount = f'{form.amount.data:.2f}'.replace('.', '').replace(',', '') #! primer 17,35 je 1735
+        print(f'{total_amoount=}')
+        print(f'{new_reservation.id=}')
+
+        string_to_hash = f'{wspay_shop_id}{wspay_sekret_key}{str(new_reservation.id)}{wspay_sekret_key}{total_amoount}{wspay_sekret_key}'
+        # Generiranje SHA-512 hasha
+        signature = hashlib.sha512(string_to_hash.encode('utf-8')).hexdigest()
+        print(f'{string_to_hash=}')
+        print(f'{signature=}')
+
+        wspay_data = {
+            'ShopID': os.getenv('WSPAY_SHOPID'),
+            'ShoppingCartID': str(new_reservation.id),
+            'TotalAmount': f'{form.amount.data:.2f}'.replace('.', ','),
+            'Signature': signature,
+            'FormURL': os.getenv('WSPAY_FORM_URL'),
+            'CustomerFirstName': form.user_name.data,
+            'CustomerLastName': form.user_surname.data,
+            'CustomerEmail': form.user_email.data,
+            'CustomerPhone': form.user_phone.data,
+            'Lang': 'HR' if language == 'mn' else 'EN',
+        }
+    else:
+        # Bez plaćanja: potreban je samo ID rezervacije za dugme "Rezervišite" (-> conformation_local).
+        wspay_data = {
+            'ShoppingCartID': str(new_reservation.id),
+        }
 
     return render_template('payment_form.html',
                             settings=settings,

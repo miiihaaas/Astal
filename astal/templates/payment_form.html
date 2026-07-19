@@ -115,6 +115,8 @@
         </div>
     </div>
     
+    {% if payment_enabled %}
+    {# ===== Aktivno WSPay plaćanje (PAYMENT_ENABLED=true) ===== #}
     <form name="pay" action="{{wspay_data['FormURL']}}" method="POST">
         <input type="hidden" name="ShopID" value="{{wspay_data['ShopID']}}">
         <input type="hidden" name="ShoppingCartID" value="{{wspay_data['ShoppingCartID']}}">
@@ -148,5 +150,25 @@
     </div>
     {% endif %}
     <a href="http://www.wspay.me" title="Monri WSpay - Web Secure Payment Gateway" target="_blank"><img alt="Monri WSpay - Web Secure Payment Gateway" src="https://www.wspay.info/payment-info/wsPayWebSecureLogo-118x50-transparent.png" border="0"></a>
+    {% else %}
+    {# ===== Rezervacija bez plaćanja (PAYMENT_ENABLED=false) ===== #}
+    <div class="col-md-12 text-center mt-4">
+        {% if language == 'mn' %}
+        <button
+            class="animated-btn text-white"
+            type="button"
+            onclick="window.location.href='{{ url_for('main.conformation_local', language=language, reservation_id=wspay_data['ShoppingCartID']) }}'">
+            Rezervišite
+        </button>
+        {% else %}
+        <button
+            class="animated-btn text-white"
+            type="button"
+            onclick="window.location.href='{{ url_for('main.conformation_local', language=language, reservation_id=wspay_data['ShoppingCartID']) }}'">
+            Reserve
+        </button>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 {% endblock content %}

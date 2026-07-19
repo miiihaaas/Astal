@@ -3,7 +3,7 @@ from datetime import datetime
 from flask_login import current_user, login_user, logout_user
 from flask import Blueprint, flash, json, redirect, render_template, request, jsonify, url_for
 from astal.admin.functions import cancel_reservation, confirm_reservation, define_working_hours, extend_reservation, finish_reservation
-from astal import db, bcrypt, mail
+from astal import app, db, bcrypt, mail
 from astal.models import Calendar, Reservation, Settings, User
 from astal.admin.forms import LoginForm, ResetPasswordRequestForm, ResetPasswordForm
 from itsdangerous import URLSafeTimedSerializer
@@ -71,7 +71,12 @@ def reservations():
         show_column = True
         
     all_reservations = Reservation.query.filter_by(reservation_date=selected_date).all()
-    reservations = [reservation for reservation in all_reservations if reservation.status != 'unpaid']
+    if app.config['PAYMENT_ENABLED']:
+        # Uz aktivno plaćanje sakrivamo neplaćene (napuštene) rezervacije.
+        reservations = [reservation for reservation in all_reservations if reservation.status != 'unpaid']
+    else:
+        # Bez plaćanja prikazujemo sve rezervacije (staro ponašanje).
+        reservations = all_reservations
     
     return render_template('reservations.html', 
                             reservations=reservations, 

@@ -37,6 +37,12 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['FLASK_APP'] = 'run.py'
 
+# Prekidač za naplatu rezervacija (WSPay).
+# false -> rezervacija se potvrđuje bez plaćanja (staro ponašanje).
+# true  -> aktivira se WSPay plaćanje, filtriranje neplaćenih rezervacija i logoi kartica.
+# Ceo kod za plaćanje ostaje netaknut; reaktivacija = postaviti PAYMENT_ENABLED=true u .env.
+app.config['PAYMENT_ENABLED'] = os.getenv('PAYMENT_ENABLED', 'false').lower() in ['true', 'on', '1']
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
@@ -102,6 +108,12 @@ from astal.admin.routes import admin
 
 app.register_blueprint(main)
 app.register_blueprint(admin)
+
+
+# Prosleđujemo prekidač za plaćanje svim template-ima (footer, payment_form...)
+@app.context_processor
+def inject_flags():
+    return dict(payment_enabled=app.config['PAYMENT_ENABLED'])
 
 
 # Ovde importujemo modele kako bi se inicirala baza podataka
