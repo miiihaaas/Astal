@@ -322,6 +322,7 @@ def conformation(language):
                             reservation_date=reservation_date, #!
                             reservation_time=new_reservation.start_time,
                             number_of_people=number_of_people,
+                            user_phone=user.phone,
                             note=new_reservation.note,
                             title=f'{settings.restaurant_name} - Rezervacije',
                             settings=settings,
@@ -367,6 +368,7 @@ def conformation_local(language, reservation_id):
                             reservation_date=reservation_date, #!
                             reservation_time=new_reservation.start_time,
                             number_of_people=number_of_people,
+                            user_phone=user.phone,
                             note=new_reservation.note,
                             title=f'{settings.restaurant_name} - Rezervacije',
                             settings=settings,
