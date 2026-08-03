@@ -196,6 +196,11 @@ def payment_form(language):
     if is_valid_user_input(form):
         user = add_user_to_db(form)
     else:
+        app.logger.warning(f'Neispravni podaci gosta pri potvrdi rezervacije: {form_data.get("user_email")}')
+        if language == 'mn':
+            flash('Podaci nisu ispravno uneti. Molimo Vas provjerite kontakt podatke, a broj telefona unesite sa pozivnim brojem zemlje (npr. +382 68 123 456).', 'danger')
+        else:
+            flash('The entered details are not valid. Please check your contact details and enter the phone number including the country prefix (e.g. +382 68 123 456).', 'danger')
         return redirect(url_for('main.home', language=language))
     new_reservation = create_reservation(form, user)
     print(f'*** {new_reservation=}')

@@ -79,9 +79,9 @@
                 <div class="col-md-3">
                     {{ form.user_phone.label(class="cormorant") }}
                     {% if form.user_phone.data %}
-                    {{ form.user_phone(class="form-control", id="user_phone", value=form.user_phone.data) }}
+                    {{ form.user_phone(class="form-control", id="user_phone", value=form.user_phone.data, placeholder="+382 68 123 456") }}
                     {% else %}
-                    {{ form.user_phone(class="form-control", id="user_phone") }}
+                    {{ form.user_phone(class="form-control", id="user_phone", placeholder="+382 68 123 456") }}
                     {% endif %}
                     {% for error in form.user_phone.errors %}
                         <span class="text-danger">{{ error }}</span>

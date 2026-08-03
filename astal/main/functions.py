@@ -7,6 +7,7 @@ from time import sleep
 from flask import flash, redirect, render_template, url_for
 from flask_mail import Message
 from astal.admin.functions import define_working_hours
+from astal.main.forms import is_valid_phone, normalize_phone
 from astal.models import Reservation, Settings, User, Calendar
 from astal import db, mail, celery, app
 
@@ -144,7 +145,7 @@ def is_valid_user_input(form):
     if not user_surname or len(user_surname) < 3:
         valid_input = False
 
-    if not user_phone or not user_phone.isdigit() or len(user_phone) < 9 or len(user_phone) > 13:
+    if not is_valid_phone(user_phone):
         valid_input = False
 
     return valid_input
@@ -154,7 +155,7 @@ def add_user_to_db(form):
     user_email = form.user_email.data
     user_name = form.user_name.data
     user_surname = form.user_surname.data
-    user_phone = form.user_phone.data
+    user_phone = normalize_phone(form.user_phone.data)
     user_inputs = [user_email, user_name, user_surname, user_phone]
     if valid_inputs:
         user = User.query.filter_by(email=user_inputs[0]).first()
