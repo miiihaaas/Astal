@@ -43,6 +43,13 @@ app.config['FLASK_APP'] = 'run.py'
 # Ceo kod za plaćanje ostaje netaknut; reaktivacija = postaviti PAYMENT_ENABLED=true u .env.
 app.config['PAYMENT_ENABLED'] = os.getenv('PAYMENT_ENABLED', 'false').lower() in ['true', 'on', '1']
 
+# Prekidač za primanje online rezervacija.
+# true  -> sajt radi normalno (podrazumevano ako parametra nema u .env).
+# false -> umesto forme se prikazuje obaveštenje da su online rezervacije privremeno
+#          nedostupne, a rute za plaćanje/potvrdu se zatvaraju.
+# Admin panel i ručni unos rezervacija rade nezavisno od ovog prekidača.
+app.config['RESERVATIONS_ENABLED'] = os.getenv('RESERVATIONS_ENABLED', 'true').lower() in ['true', 'on', '1']
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
@@ -110,10 +117,11 @@ app.register_blueprint(main)
 app.register_blueprint(admin)
 
 
-# Prosleđujemo prekidač za plaćanje svim template-ima (footer, payment_form...)
+# Prosleđujemo prekidače svim template-ima (footer, payment_form, home...)
 @app.context_processor
 def inject_flags():
-    return dict(payment_enabled=app.config['PAYMENT_ENABLED'])
+    return dict(payment_enabled=app.config['PAYMENT_ENABLED'],
+                reservations_enabled=app.config['RESERVATIONS_ENABLED'])
 
 
 # Ovde importujemo modele kako bi se inicirala baza podataka

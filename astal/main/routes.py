@@ -53,6 +53,12 @@ def home(language):
     else:
         return redirect(url_for('main.home', language='mn'))
     # return redirect(url_for('main.under_construction')) #! se menja nešto na sajtu -- uncomment
+    #! Online rezervacije ugašene preko .env (RESERVATIONS_ENABLED=false) -> samo obaveštenje.
+    if not app.config['RESERVATIONS_ENABLED']:
+        return render_template('reservations_closed.html',
+                                title=f'{settings.restaurant_name} - Rezervacije',
+                                settings=settings,
+                                language=language)
     min_date, max_date = define_min_and_max_dates()
     print(f'{min_date=}')
     if not request.method == 'GET':
@@ -175,6 +181,10 @@ def home(language):
 @main.route('/payment_form/<string:language>', methods=['GET'])
 def payment_form(language):
     settings = Settings.query.first()
+    #! Ako su rezervacije ugašene, ne dozvoljavamo dovršavanje kroz stari tab ili direktan URL.
+    if not app.config['RESERVATIONS_ENABLED']:
+        session.pop('payment_form_data', None)
+        return redirect(url_for('main.home', language=language))
     if language == 'mn':
         form = PaymentFormSerbian()
     elif language == 'en':
@@ -260,6 +270,8 @@ def payment_form(language):
 @main.route('/conformation/<string:language>', methods=['GET', 'POST'])
 def conformation(language):
     settings = Settings.query.first()
+    if not app.config['RESERVATIONS_ENABLED']:
+        return redirect(url_for('main.home', language=language))
     reservation_id = request.args.get('ShoppingCartID')
     approval_code = request.args.get('ApprovalCode')
     recived_signature = request.args.get('Signature')
@@ -337,7 +349,9 @@ def conformation(language):
 @main.route('/conformation_local/<string:language>/<int:reservation_id>', methods=['GET', 'POST'])
 def conformation_local(language, reservation_id):
     settings = Settings.query.first()
-    
+    if not app.config['RESERVATIONS_ENABLED']:
+        return redirect(url_for('main.home', language=language))
+
     new_reservation = Reservation.query.get_or_404(reservation_id)
     user = User.query.get_or_404(new_reservation.user_id)
     

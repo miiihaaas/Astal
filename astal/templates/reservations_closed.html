@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% block content %}
+<ul class="languages"><li class="wpml-ls-slot-shortcode_actions wpml-ls-item wpml-ls-item-sr wpml-ls-current-language wpml-ls-first-item wpml-ls-item-legacy-list-horizontal">
+    <a href="{{ url_for('main.home', language='mn' )}}" class="wpml-ls-link">
+        <span class="wpml-ls-native">MNE</span></a>
+</li><li class="wpml-ls-slot-shortcode_actions wpml-ls-item wpml-ls-item-en wpml-ls-last-item wpml-ls-item-legacy-list-horizontal">
+    <a href="{{url_for('main.home', language='en')}}" class="wpml-ls-link">
+        <span class="wpml-ls-native" lang="en">ENG</span></a>
+</li></ul>
+{% if language == 'en' %}
+<h1 class="astal-heading">RESERVATION</h1>
+{% else %}
+<h1 class="astal-heading">REZERVACIJA</h1>
+{% endif %}
+<div class="container astal-form">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8 text-center">
+            {% if language == 'en' %}
+            <h2 class="cormorant mb-4">Online reservations are temporarily unavailable</h2>
+            <p class="lead">Due to heavy load on the internet network in our area, our online booking system is not working reliably at the moment, so we have temporarily switched it off rather than risk a reservation going unconfirmed.</p>
+            <p class="lead">We would still be delighted to welcome you &mdash; please arrange your reservation with us directly:</p>
+            <p class="lead mb-4">
+                <strong>Phone:</strong> <a href="tel:+38268333444">+382 68 333 444</a><br>
+                <strong>E-mail:</strong> <a href="mailto:catovicamlini@t-com.me">catovicamlini@t-com.me</a>
+            </p>
+            <p class="lead">Thank you for your understanding. We look forward to seeing you.</p>
+            {% else %}
+            <h2 class="cormorant mb-4">Online rezervacije su privremeno nedostupne</h2>
+            <p class="lead">Zbog opterećenja internet mreže u našem području, sistem za online rezervacije trenutno ne radi pouzdano, pa smo ga privremeno isključili kako ne bismo rizikovali da neka rezervacija ostane nepotvrđena.</p>
+            <p class="lead">Vaša posjeta nam je i dalje dobrodošla &mdash; molimo Vas da rezervaciju ugovorite direktno sa nama:</p>
+            <p class="lead mb-4">
+                <strong>Telefon:</strong> <a href="tel:+38268333444">+382 68 333 444</a><br>
+                <strong>E-mail:</strong> <a href="mailto:catovicamlini@t-com.me">catovicamlini@t-com.me</a>
+            </p>
+            <p class="lead">Hvala Vam na razumijevanju. Radujemo se Vašem dolasku.</p>
+            {% endif %}
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+{% endblock content %}

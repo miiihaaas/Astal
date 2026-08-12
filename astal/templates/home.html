@@ -105,7 +105,11 @@
                     <button class="animated-btn text-white" type="submit" id="reservation_button" name="reservation_button" onclick="document.getElementById('submit_type').value='button'">Reserve</button>
                     {% endif %}
                     {% else %}
-                    Nije moguće rezervisati, za više informacija konaktirajte nas na broj...
+                    {% if language == 'en' %}
+                    <p class="lead">For the selected date and number of guests there are no available reservation times. Please try another date, or contact us directly at <a href="tel:+38268333444">+382 68 333 444</a> or <a href="mailto:catovicamlini@t-com.me">catovicamlini@t-com.me</a>.</p>
+                    {% else %}
+                    <p class="lead">Za izabrani datum i broj gostiju nema slobodnih termina. Molimo Vas pokušajte sa drugim datumom ili nas kontaktirajte direktno na <a href="tel:+38268333444">+382 68 333 444</a> ili <a href="mailto:catovicamlini@t-com.me">catovicamlini@t-com.me</a>.</p>
+                    {% endif %}
                     <input type="hidden" id="submit_type" name="submit_type" value="">
                     {% endif %}
                 </div>
